@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# AfriGrowth AI Setup Script
-echo "🚀 Setting up AfriGrowth AI..."
+# Klya AI Setup Script
+echo "🚀 Setting up Klya AI..."
 
 # Check if Node.js is installed
 if ! command -v node &> /dev/null; then
@@ -63,4 +63,4 @@ echo ""
 echo "For production deployment:"
 echo "1. Run: docker-compose up -d"
 echo ""
-echo "🌍 Welcome to AfriGrowth AI - Empowering Ghanaian Businesses!"
+echo "🌍 Welcome to Klya AI - Empowering Ghanaian Businesses!"

@@ -108,3 +108,14 @@ uploads/
 *.pem
 *.key
 *.crt
+
+# TypeScript build cache
+*.tsbuildinfo
+
+# Render & Vercel build folders (if you deploy there)
+.vercel/
+.render/
+
+# Local MongoDB data (if you’re using it locally)
+data/
+dump/

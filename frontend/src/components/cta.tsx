@@ -30,7 +30,7 @@ export function CTA() {
           </h2>
           
           <p className="text-xl text-white/90 max-w-3xl mx-auto mb-8 leading-relaxed">
-            Join hundreds of Ghanaian businesses already using AfriGrowth AI to scale their operations, 
+            Join hundreds of Ghanaian businesses already using KLYA AI to scale their operations, 
             create better content, and connect with their customers in meaningful ways.
           </p>
 

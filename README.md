@@ -1,115 +1,128 @@
-# AfriGrowth AI
+KLYA AI
 
-A Ghana-first SaaS platform that empowers small businesses and digital creators through localized AI tools.
+Empowering Africa’s next generation of entrepreneurs with intelligent, culturally-aware business tools.
 
-## 🚀 Features
+KLYA AI is a next-gen SaaS platform built to supercharge African businesses and creators through AI-powered solutions — from smart content generation to intelligent business insights, all designed with local context and accessibility in mind.
 
-- **AI-Powered Content Generation**: GPT-based content creation tailored for Ghanaian businesses
-- **Audio Transcription**: Whisper-powered audio-to-text conversion in local languages
-- **Local Language Support**: Hugging Face integration for Ghanaian language tone modeling
-- **Mobile-First Design**: Responsive interface optimized for Ghanaian users
-- **Business Tools**: Specialized AI tools for small business operations
-- **Creator Tools**: Digital content creation and management tools
+🚀 Features
 
-## 🏗️ Architecture
+AI Content Creation — Generate blogs, captions, and ads tailored for African audiences using GPT-based AI.
 
-- **Frontend**: Next.js 14 with TypeScript and Tailwind CSS
-- **Backend**: Node.js with Express and TypeScript
-- **Database**: MongoDB with Mongoose ODM
-- **AI Services**: OpenAI (GPT, Whisper) + Hugging Face
-- **Authentication**: JWT-based auth with role management
-- **Deployment**: Docker containers with CI/CD pipeline
+Audio Transcription (Whisper) — Convert voice notes and meetings into text in English, Twi, Ga, or Ewe.
 
-## 🛠️ Tech Stack
+Localized Language Support — Hugging Face models trained on African language tone and style.
 
-### Frontend
-- Next.js 14 (App Router)
-- TypeScript
-- Tailwind CSS
-- React Query
-- Zustand (State Management)
-- React Hook Form
-- Framer Motion
+Smart Dashboard — Monitor your AI usage, top-performing content, and engagement analytics.
 
-### Backend
-- Node.js
-- Express.js
-- TypeScript
-- MongoDB + Mongoose
-- JWT Authentication
-- Multer (File Uploads)
-- Winston (Logging)
+Business Tools Suite — Invoice generator, CRM, and inventory manager for small businesses.
 
-### AI & External Services
-- OpenAI API (GPT-4, Whisper)
-- Hugging Face Transformers
-- Cloudinary (Media Storage)
+Creator Tools — Content planner, social post scheduler, and brand kit manager.
 
-## 🚀 Quick Start
+Mobile & Offline Friendly — Works seamlessly on mobile and in low-connectivity environments.
 
-1. **Clone and Install**
-   ```bash
-   git clone <repository-url>
-   cd afrigrowth-ai
-   npm run install:all
-   ```
+🏗️ Architecture
 
-2. **Environment Setup**
-   ```bash
-   cp .env.example .env
-   # Configure your environment variables
-   ```
+Frontend: Next.js 14 (App Router) + TypeScript + Tailwind CSS + ShadCN UI
 
-3. **Development**
-   ```bash
-   npm run dev
-   ```
+Backend: Node.js + Express + TypeScript
 
-4. **Production Build**
-   ```bash
-   npm run build
-   npm start
-   ```
+Database: MongoDB with Mongoose ODM
 
-## 📁 Project Structure
+AI Services: OpenAI (GPT, Whisper) + Hugging Face (local models)
 
-```
-afrigrowth-ai/
-├── frontend/                 # Next.js frontend application
-│   ├── app/                 # App Router pages
-│   ├── components/          # Reusable React components
-│   ├── lib/                 # Utilities and configurations
-│   ├── hooks/               # Custom React hooks
-│   └── types/               # TypeScript type definitions
-├── backend/                 # Node.js backend API
+Authentication: JWT-based auth with secure roles and session management
+
+Deployment: Docker containers with CI/CD and scalable hosting
+
+🛠️ Tech Stack
+Frontend
+
+⚡ Next.js 14 (App Router)
+
+🌀 TypeScript
+
+🎨 Tailwind CSS + ShadCN UI
+
+🔁 React Query & Zustand
+
+🧩 React Hook Form
+
+✨ Framer Motion (smooth animations)
+
+Backend
+
+🚀 Node.js + Express
+
+🔒 JWT Authentication
+
+🗃️ MongoDB + Mongoose
+
+🧠 Winston (logging), Multer (uploads), Bcrypt (security)
+
+AI & Integrations
+
+🤖 OpenAI (GPT-4, Whisper)
+
+🧬 Hugging Face Transformers
+
+☁️ Cloudinary (media storage)
+
+⚙️ Quick Start
+# 1️⃣ Clone and install
+git clone <repository-url>
+cd klya-ai
+npm run install:all
+
+# 2️⃣ Setup environment
+cp .env.example .env
+# configure your API keys and MongoDB URI
+
+# 3️⃣ Run development servers
+npm run dev
+
+# 4️⃣ Build for production
+npm run build
+npm start
+
+🧩 Project Structure
+klya-ai/
+├── frontend/                 # Next.js frontend
+│   ├── app/                  # App Router pages
+│   ├── components/           # Shared UI components
+│   ├── lib/                  # Config and utils
+│   ├── hooks/                # Custom React hooks
+│   └── types/                # TypeScript definitions
+├── backend/                  # Express backend API
 │   ├── src/
-│   │   ├── controllers/     # Route controllers
-│   │   ├── models/          # Database models
-│   │   ├── routes/          # API routes
-│   │   ├── middleware/      # Express middleware
-│   │   ├── services/        # Business logic
-│   │   └── utils/           # Utility functions
-│   └── tests/               # Backend tests
-├── docs/                    # Documentation
-└── scripts/                 # Deployment and utility scripts
-```
+│   │   ├── controllers/      # Request handlers
+│   │   ├── models/           # MongoDB models
+│   │   ├── routes/           # API routes
+│   │   ├── middleware/       # Authentication & validation
+│   │   ├── services/         # Core business logic
+│   │   └── utils/            # Helper functions
+│   └── tests/                # Backend tests
+└── docs/                     # Documentation
 
-## 🌍 Localization
+🌍 Localization
 
-The platform supports multiple Ghanaian languages:
-- English (Primary)
-- Twi (Akan)
-- Ga
-- Ewe
-- Hausa
+Supports multilingual experiences across Africa:
 
-## 🔐 Environment Variables
+🇬🇭 English (default)
 
-Create a `.env` file in the root directory:
+🗣️ Twi
 
-```env
+🗣️ Ga
+
+🗣️ Ewe
+
+🗣️ Hausa
+
+🔐 Environment Variables
+
+Create a .env file at the project root:
+
 # Database
-MONGODB_URI=mongodb://localhost:27017/afrigrowth-ai
+MONGODB_URI=mongodb://localhost:27017/klya-ai
 
 # OpenAI
 OPENAI_API_KEY=your_openai_api_key
@@ -128,24 +141,28 @@ CLOUDINARY_API_SECRET=your_api_secret
 # Server
 PORT=3001
 NODE_ENV=development
-```
 
-## 🤝 Contributing
+🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+Contributions are welcome!
 
-## 📄 License
+Fork the repository
 
-This project is licensed under the MIT License.
+Create a new feature branch
 
-## 🆘 Support
+Commit and push your changes
 
-For support, email support@afrigrowth.ai or join our community Discord.
+Submit a Pull Request
 
----
+📜 License
 
-**Built with ❤️ for Ghana's digital economy**
+Licensed under the MIT License — free to use, modify, and distribute.
+
+💬 Support
+
+Need help or want to collaborate?
+📧 Email: support@klya.ai
+
+💬 Join our community on Discord (coming soon)
+
+KLYA AI — Where Africa’s Business Future Meets Intelligent Innovation.
