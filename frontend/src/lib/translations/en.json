@@ -1,0 +1,202 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "update": "Update",
+    "submit": "Submit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "export": "Export",
+    "import": "Import",
+    "download": "Download",
+    "upload": "Upload"
+  },
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "features": "Features",
+    "pricing": "Pricing",
+    "about": "About",
+    "contact": "Contact",
+    "blog": "Blog",
+    "help": "Help",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to your AfriGrowth AI account",
+      "email": "Email Address",
+      "password": "Password",
+      "forgotPassword": "Forgot Password?",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up here",
+      "loginButton": "Sign In",
+      "loginSuccess": "Welcome back!",
+      "loginError": "Invalid email or password"
+    },
+    "register": {
+      "title": "Create Your Account",
+      "subtitle": "Join thousands of Ghanaian entrepreneurs",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "businessName": "Business Name (Optional)",
+      "phoneNumber": "Phone Number",
+      "agreeTerms": "I agree to the Terms of Service and Privacy Policy",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in here",
+      "registerButton": "Create Account",
+      "registerSuccess": "Account created successfully!",
+      "registerError": "Registration failed. Please try again."
+    },
+    "forgotPassword": {
+      "title": "Reset Password",
+      "subtitle": "Enter your email to receive reset instructions",
+      "email": "Email Address",
+      "sendButton": "Send Reset Link",
+      "backToLogin": "Back to Login",
+      "emailSent": "Reset link sent to your email"
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome back, {{name}}",
+    "overview": "Overview",
+    "quickStats": "Quick Stats",
+    "recentActivity": "Recent Activity",
+    "usageThisMonth": "Usage This Month",
+    "contentGenerated": "Content Generated",
+    "audioTranscribed": "Audio Transcribed",
+    "imagesCreated": "Images Created",
+    "apiCalls": "API Calls",
+    "subscriptionStatus": "Subscription Status",
+    "trialDaysLeft": "{{days}} days left in trial",
+    "upgradeNow": "Upgrade Now",
+    "viewAnalytics": "View Analytics",
+    "generateContent": "Generate Content",
+    "transcribeAudio": "Transcribe Audio",
+    "createImage": "Create Image"
+  },
+  "aiGenerator": {
+    "title": "AI Content Generator",
+    "subtitle": "Create engaging content for your business",
+    "contentType": "Content Type",
+    "language": "Language",
+    "prompt": "Describe what you want to create",
+    "tone": "Tone",
+    "length": "Length",
+    "generate": "Generate Content",
+    "regenerate": "Regenerate",
+    "copy": "Copy to Clipboard",
+    "save": "Save Content",
+    "export": "Export",
+    "contentTypes": {
+      "blogPost": "Blog Post",
+      "socialMedia": "Social Media Post",
+      "email": "Email",
+      "productDescription": "Product Description",
+      "other": "Other"
+    },
+    "tones": {
+      "professional": "Professional",
+      "casual": "Casual",
+      "friendly": "Friendly",
+      "formal": "Formal",
+      "creative": "Creative"
+    },
+    "lengths": {
+      "short": "Short (50-100 words)",
+      "medium": "Medium (100-300 words)",
+      "long": "Long (300-500 words)",
+      "veryLong": "Very Long (500+ words)"
+    }
+  },
+  "subscription": {
+    "plans": {
+      "starter": {
+        "name": "Starter",
+        "price": "Free",
+        "description": "Perfect for individuals getting started",
+        "features": [
+          "50 content generations per month",
+          "Basic templates",
+          "Email support",
+          "1GB storage"
+        ]
+      },
+      "professional": {
+        "name": "Professional",
+        "price": "GHS 99/month",
+        "description": "Ideal for growing businesses",
+        "features": [
+          "500 content generations per month",
+          "100 audio transcriptions",
+          "Advanced analytics",
+          "Priority support",
+          "API access",
+          "10GB storage"
+        ]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "GHS 299/month",
+        "description": "For large organizations",
+        "features": [
+          "2000 content generations per month",
+          "500 audio transcriptions",
+          "1000 image generations",
+          "Advanced analytics",
+          "Dedicated support",
+          "Custom integrations",
+          "100GB storage"
+        ]
+      }
+    },
+    "currentPlan": "Current Plan",
+    "upgrade": "Upgrade Plan",
+    "downgrade": "Downgrade Plan",
+    "billingHistory": "Billing History",
+    "paymentMethod": "Payment Method",
+    "nextBilling": "Next Billing Date"
+  },
+  "languages": {
+    "en": "English",
+    "tw": "Twi",
+    "ga": "Ga",
+    "ew": "Ewe",
+    "ha": "Hausa"
+  },
+  "footer": {
+    "company": "Company",
+    "product": "Product",
+    "resources": "Resources",
+    "legal": "Legal",
+    "description": "Empowering Ghanaian businesses with AI-powered tools for growth and success.",
+    "copyright": "© 2024 AfriGrowth AI. All rights reserved.",
+    "builtWithLove": "Built with ❤️ for Ghana's digital economy"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Network error. Please check your connection.",
+    "unauthorized": "You are not authorized to perform this action.",
+    "notFound": "The requested resource was not found.",
+    "validation": "Please check your input and try again.",
+    "rateLimit": "Too many requests. Please try again later.",
+    "subscription": "This feature requires a subscription upgrade."
+  }
+}

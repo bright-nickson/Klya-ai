@@ -1,0 +1,92 @@
+{
+  "common": {
+    "loading": "Ɛreloading...",
+    "error": "Mfomsoɔ",
+    "success": "Ɛyɛ yie",
+    "cancel": "Gyae",
+    "save": "Sie",
+    "delete": "Yi fi",
+    "edit": "Sesa",
+    "create": "Yɛ",
+    "update": "Ma ɛnyɛ foforo",
+    "submit": "Fa kɔ",
+    "back": "San kɔ",
+    "next": "Ɛtoɔ so",
+    "previous": "Deɛ ɛtwaa anim",
+    "close": "To mu",
+    "search": "Hwehwɛ",
+    "filter": "Sɛn",
+    "sort": "Hyehyɛ",
+    "export": "Yi fi",
+    "import": "Fa ba",
+    "download": "Twe ba fam",
+    "upload": "Fa kɔ soro"
+  },
+  "navigation": {
+    "home": "Fie",
+    "dashboard": "Adwumayɛbea",
+    "features": "Nneɛma",
+    "pricing": "Boɔ",
+    "about": "Yɛn ho nsɛm",
+    "contact": "Frɛ yɛn",
+    "blog": "Blog",
+    "help": "Mmoa",
+    "login": "Kɔ mu",
+    "register": "Kyerɛw wo din",
+    "logout": "Fi adi"
+  },
+  "auth": {
+    "login": {
+      "title": "Akwaaba Bio",
+      "subtitle": "Kɔ wo AfriGrowth AI account mu",
+      "email": "Email Address",
+      "password": "Password",
+      "forgotPassword": "Wo werɛ afi password?",
+      "noAccount": "Wonni account?",
+      "signUp": "Kyerɛw wo din wɔ ha",
+      "loginButton": "Kɔ Mu",
+      "loginSuccess": "Akwaaba bio!",
+      "loginError": "Email anaa password no nyɛ"
+    },
+    "register": {
+      "title": "Yɛ Wo Account",
+      "subtitle": "Ka Ghana adwumawuranom mpempem ho",
+      "firstName": "Edin a Edi Kan",
+      "lastName": "Abusua Din",
+      "email": "Email Address",
+      "password": "Password",
+      "confirmPassword": "Si Password So Dua",
+      "businessName": "Adwuma Din (Sɛ Wopɛ a)",
+      "phoneNumber": "Telefon Nɔma",
+      "agreeTerms": "Mepene nhyehyɛeɛ ne privacy policy so",
+      "hasAccount": "Wowɔ account dada?",
+      "signIn": "Kɔ mu wɔ ha",
+      "registerButton": "Yɛ Account",
+      "registerSuccess": "Wɔayɛ account no yie!",
+      "registerError": "Wɔantumi anyɛ account no. San sɔ hwɛ."
+    }
+  },
+  "dashboard": {
+    "welcome": "Akwaaba bio, {{name}}",
+    "overview": "Nsɛm Titiriw",
+    "quickStats": "Ntɛmntɛm Akontaabu",
+    "recentActivity": "Nneyɛeɛ a Aba",
+    "usageThisMonth": "Sɛdeɛ Wode Di Dwuma Bosome Yi",
+    "contentGenerated": "Nsɛm a Wɔayɛ",
+    "audioTranscribed": "Audio a Wɔakyerɛw",
+    "imagesCreated": "Mfonini a Wɔayɛ",
+    "apiCalls": "API Calls"
+  },
+  "languages": {
+    "en": "Borɔfo Kasa",
+    "tw": "Twi",
+    "ga": "Ga",
+    "ew": "Eʋe",
+    "ha": "Hausa"
+  },
+  "footer": {
+    "description": "Yɛboa Ghana adwumawuranom ma wɔnya nkɔso wɔ AI mmoa so.",
+    "copyright": "© 2024 AfriGrowth AI. Hokwan biara wɔ yɛn nsam.",
+    "builtWithLove": "Wɔde ɔdɔ ayɛ ama Ghana digital economy"
+  }
+}
