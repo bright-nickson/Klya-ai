@@ -74,8 +74,8 @@ export default function CookiesPage() {
               <h2 className="text-2xl font-semibold mb-4 mt-8">Contact Us</h2>
               <p className="text-muted-foreground">
                 If you have questions about our cookie policy, please contact us at{' '}
-                <a href="mailto:privacy@afrigrowth.ai" className="text-primary hover:underline">
-                  privacy@afrigrowth.ai
+                <a href="mailto:privacy@KLYA.ai" className="text-primary hover:underline">
+                  privacy@KLYA.ai
                 </a>
               </p>
             </motion.div>

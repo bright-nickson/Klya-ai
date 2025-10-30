@@ -156,7 +156,7 @@ export function Features() {
               Ready to Transform Your Business?
             </h3>
             <p className="text-muted-foreground mb-6">
-              Join hundreds of Ghanaian businesses already using AfriGrowth AI to scale their operations.
+              Join hundreds of Ghanaian businesses already using  AI to scale their operations.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/register">

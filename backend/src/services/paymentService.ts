@@ -165,8 +165,8 @@ class PaymentService {
             partyIdType: 'MSISDN',
             partyId: data.phoneNumber.replace('+233', '233')
           },
-          payerMessage: data.description || 'AfriGrowth AI Payment',
-          payeeNote: 'AfriGrowth AI Subscription'
+          payerMessage: data.description || 'KLYA AI Payment',
+          payeeNote: 'KLYA AI Subscription'
         },
         {
           headers: {
@@ -257,7 +257,7 @@ class PaymentService {
           currency: 'GHS',
           reference,
           phoneNumber: data.phoneNumber,
-          description: data.description || 'AfriGrowth AI Payment'
+          description: data.description || 'KLYA AI Payment'
         },
         {
           headers: {

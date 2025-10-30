@@ -1,7 +1,7 @@
 {
-  "name": "afrigrowth-ai-backend",
+  "name": "KLYA-ai-backend",
   "version": "1.0.0",
-  "description": "Backend API for AfriGrowth AI platform",
+  "description": "Backend API for KLYA AI platform",
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
@@ -61,6 +61,6 @@
     "express",
     "typescript"
   ],
-  "author": "AfriGrowth AI Team",
+  "author": "KLYA AI Team",
   "license": "MIT"
 }

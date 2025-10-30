@@ -1,5 +1,5 @@
 {
-  "name": "afrigrowth-ai",
+  "name": "KLYA-ai",
   "version": "1.0.0",
   "description": "Ghana-first SaaS platform empowering small businesses and digital creators through localized AI tools",
   "main": "index.js",
@@ -27,7 +27,7 @@
     "digital-creators",
     "localization"
   ],
-  "author": "AfriGrowth AI Team",
+  "author": "KLYA AI Team",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.2"

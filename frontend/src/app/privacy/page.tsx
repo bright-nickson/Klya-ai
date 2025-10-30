@@ -145,7 +145,7 @@ export default function PrivacyPage() {
                 </p>
                 <div className="mt-4 p-4 bg-muted/30 rounded-lg">
             <p className="text-muted-foreground">
-                    Email: privacy@afrigrowth.ai<br />
+                    Email: privacy@KLYA.ai<br />
                     Address: Accra, Ghana<br />
                     Phone: +233 XX XXX XXXX
             </p>

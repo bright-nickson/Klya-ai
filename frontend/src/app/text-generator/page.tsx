@@ -46,7 +46,7 @@ export default function TextGeneratorPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-6 md:p-12">
       <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-2xl font-semibold mb-4">✨ AfriGrowth AI — Smart Content Generator</h1>
+        <h1 className="text-2xl font-semibold mb-4">✨  AI — Smart Content Generator</h1>
 
         <label className="block mb-2 text-sm font-medium text-gray-700">Prompt</label>
         <textarea

@@ -1,8 +1,8 @@
-# AfriGrowth AI API Documentation
+# KLYA AI API Documentation
 
 ## Base URL
 - Development: `http://localhost:3001/api`
-- Production: `https://api.afrigrowth.ai/api`
+- Production: `https://api.KLYA.ai/api`
 
 ## Authentication
 All protected endpoints require a Bearer token in the Authorization header:

@@ -38,7 +38,7 @@
   "auth": {
     "login": {
       "title": "Akwaaba Bio",
-      "subtitle": "Kɔ wo AfriGrowth AI account mu",
+      "subtitle": "Kɔ wo KLYA AI account mu",
       "email": "Email Address",
       "password": "Password",
       "forgotPassword": "Wo werɛ afi password?",
@@ -86,7 +86,7 @@
   },
   "footer": {
     "description": "Yɛboa Ghana adwumawuranom ma wɔnya nkɔso wɔ AI mmoa so.",
-    "copyright": "© 2024 AfriGrowth AI. Hokwan biara wɔ yɛn nsam.",
+    "copyright": "© 2024 KLYA AI. Hokwan biara wɔ yɛn nsam.",
     "builtWithLove": "Wɔde ɔdɔ ayɛ ama Ghana digital economy"
   }
 }

@@ -1,7 +1,7 @@
 # Video Content Creation Guide
 
 ## 📹 Overview
-This guide helps you create engaging demo videos for the AfriGrowth AI platform.
+This guide helps you create engaging demo videos for the KLYA AI platform.
 
 ## 🎬 Video Specifications
 

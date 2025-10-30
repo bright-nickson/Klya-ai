@@ -230,7 +230,7 @@ Currently using educational AI videos from YouTube as placeholders. You can repl
 4. Or use direct MP4 files instead of YouTube embeds
 
 ### Future Improvements
-- Add custom demo videos showing actual AfriGrowth AI features
+- Add custom demo videos showing actual KLYA AI features
 - Add video thumbnails for better preview
 - Add video progress tracking
 - Add analytics to track which demos are watched most

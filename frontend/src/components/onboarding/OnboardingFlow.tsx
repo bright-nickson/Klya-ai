@@ -177,7 +177,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
       if (result.success) {
         updateUser(result.user)
-        toast.success('Welcome to AfriGrowth AI! 🎉')
+        toast.success('Welcome to KLYA AI! 🎉')
         onComplete()
       } else {
         toast.error(result.error || 'Failed to complete onboarding')
@@ -197,7 +197,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
           <div className="space-y-6">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
-                What brings you to AfriGrowth AI?
+                What brings you to KLYA AI?
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
                 Select all that apply - this helps us personalize your experience

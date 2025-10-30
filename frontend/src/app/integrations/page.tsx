@@ -25,7 +25,7 @@ export default function IntegrationsPage() {
               transition={{ delay: 0.1 }}
               className="text-xl text-muted-foreground mb-8"
             >
-              Connect AfriGrowth AI with your favorite tools and platforms
+              Connect KLYA AI with your favorite tools and platforms
             </motion.p>
             <motion.div
               initial={{ opacity: 0 }}

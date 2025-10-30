@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Simple API Test Script for AfriGrowth AI
+ * Simple API Test Script for KLYA AI
  * Tests basic API endpoints without requiring database connection
  */
 
@@ -149,7 +149,7 @@ async function testProtectedEndpoint() {
 
 // Main test runner
 async function runTests() {
-  console.log('🚀 Starting AfriGrowth AI API Tests\n');
+  console.log('🚀 Starting KLYA AI API Tests\n');
   
   const tests = [
     { name: 'Health Check', fn: testHealthCheck },

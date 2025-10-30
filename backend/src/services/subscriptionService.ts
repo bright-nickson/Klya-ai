@@ -201,7 +201,7 @@ class SubscriptionService {
           amount: plan.price,
           phoneNumber: upgradeData.paymentDetails.phoneNumber,
           network: upgradeData.paymentMethod === 'mtn_momo' ? 'mtn' : 'airteltigo',
-          description: `AfriGrowth AI ${plan.name} Plan Subscription`
+          description: `KLYA AI ${plan.name} Plan Subscription`
         })
       }
 

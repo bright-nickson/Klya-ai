@@ -38,7 +38,7 @@
   "auth": {
     "login": {
       "title": "Welcome Back",
-      "subtitle": "Sign in to your AfriGrowth AI account",
+      "subtitle": "Sign in to your KLYA AI account",
       "email": "Email Address",
       "password": "Password",
       "forgotPassword": "Forgot Password?",
@@ -187,7 +187,7 @@
     "resources": "Resources",
     "legal": "Legal",
     "description": "Empowering Ghanaian businesses with AI-powered tools for growth and success.",
-    "copyright": "© 2024 AfriGrowth AI. All rights reserved.",
+    "copyright": "© 2024 KLYA AI. All rights reserved.",
     "builtWithLove": "Built with ❤️ for Ghana's digital economy"
   },
   "errors": {

@@ -1,5 +1,5 @@
-// MongoDB initialization script for AfriGrowth AI
-db = db.getSiblingDB('afrigrowth-ai');
+// MongoDB initialization script for KLYA AI
+db = db.getSiblingDB('KLYA-ai');
 
 // Create collections with validation
 db.createCollection('users', {
@@ -145,6 +145,6 @@ db.createCollection('analytics', {
 db.analytics.createIndex({ userId: 1, timestamp: -1 });
 db.analytics.createIndex({ action: 1, timestamp: -1 });
 
-print('✅ AfriGrowth AI database initialized successfully!');
+print('✅ KLYA AI database initialized successfully!');
 print('📊 Collections created: users, content, transcriptions, analytics');
 print('🔍 Indexes created for optimal performance');

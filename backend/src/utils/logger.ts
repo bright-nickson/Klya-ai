@@ -15,7 +15,7 @@ export const logger = winston.createLogger({
     errors({ stack: true }),
     json()
   ),
-  defaultMeta: { service: 'afrigrowth-ai-backend' },
+  defaultMeta: { service: 'KLYA-ai-backend' },
   transports: [
     // Write all logs with importance level of `error` or less to `error.log`
     new winston.transports.File({ 

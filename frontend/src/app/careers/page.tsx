@@ -103,7 +103,7 @@ export default function CareersPage() {
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-4">Why Work With Us?</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                We're building something special at AfriGrowth AI. Here's what makes us different.
+                We're building something special at KLYA AI. Here's what makes us different.
               </p>
             </div>
 
@@ -237,7 +237,7 @@ export default function CareersPage() {
                 We're always looking for talented individuals to join our team. 
                 Send us your resume and let us know how you'd like to contribute to our mission.
               </p>
-              <a href="mailto:careers@afrigrowth.ai" className="btn btn-primary btn-enhanced hover-glow">
+              <a href="mailto:careers@KLYA.ai" className="btn btn-primary btn-enhanced hover-glow">
                 Send Us Your Resume
               </a>
             </motion.div>

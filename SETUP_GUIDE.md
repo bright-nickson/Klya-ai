@@ -1,4 +1,4 @@
-# 🚀 AfriGrowth AI - Complete Setup Guide
+# 🚀 KLYA AI - Complete Setup Guide
 
 ## 📋 System Requirements
 
@@ -23,15 +23,15 @@ cd frontend && npm install
 
 ```bash
 # Start MongoDB
-sudo docker run -d --name afrigrowth-mongodb \
+sudo docker run -d --name KLYA-mongodb \
   -p 27017:27017 \
   -e MONGO_INITDB_ROOT_USERNAME=admin \
   -e MONGO_INITDB_ROOT_PASSWORD=password123 \
-  -e MONGO_INITDB_DATABASE=afrigrowth-ai \
+  -e MONGO_INITDB_DATABASE=KLYA-ai \
   mongo:7.0
 
 # Start Redis (optional, for caching)
-sudo docker run -d --name afrigrowth-redis \
+sudo docker run -d --name KLYA-redis \
   -p 6379:6379 \
   redis:7.2-alpine
 ```
@@ -153,10 +153,10 @@ sudo docker-compose down
 sudo docker ps | grep mongo
 
 # Check MongoDB logs
-sudo docker logs afrigrowth-mongodb
+sudo docker logs KLYA-mongodb
 
 # Restart MongoDB
-sudo docker restart afrigrowth-mongodb
+sudo docker restart KLYA-mongodb
 ```
 
 ### Port Conflicts
@@ -199,7 +199,7 @@ Your system is ready when:
 
 If you encounter any issues:
 1. Check the troubleshooting section above
-2. Review the logs: `sudo docker logs afrigrowth-mongodb`
+2. Review the logs: `sudo docker logs KLYA-mongodb`
 3. Verify environment variables are set correctly
 4. Ensure all ports (3000, 3001, 27017) are available
 

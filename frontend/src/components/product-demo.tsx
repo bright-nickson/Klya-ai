@@ -9,7 +9,7 @@ const demos = [
   {
     id: 'content-generation',
     title: 'AI Content Generation',
-    description: 'Watch how AfriGrowth AI generates high-quality blog posts, social media content, and marketing copy in seconds.',
+    description: 'Watch how KLYA AI generates high-quality blog posts, social media content, and marketing copy in seconds.',
     icon: Sparkles,
     videoUrl: 'https://www.youtube.com/embed/VPRSBzXzavo',
     demoLink: '/dashboard/ai-generator',
@@ -96,7 +96,7 @@ export function ProductDemo() {
             </span>
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Watch real demonstrations of how AfriGrowth AI transforms your workflow with 
+            Watch real demonstrations of how KLYA AI transforms your workflow with 
             cutting-edge AI technology tailored for African businesses.
           </p>
         </motion.div>

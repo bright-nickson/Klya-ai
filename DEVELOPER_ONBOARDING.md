@@ -1,6 +1,6 @@
-## AfriGrowth AI – Developer Onboarding Guide
+## KLYA AI – Developer Onboarding Guide
 
-Welcome to AfriGrowth AI. This guide will help you clone, configure, and run the app locally in under 30 minutes.
+Welcome to KLYA AI. This guide will help you clone, configure, and run the app locally in under 30 minutes.
 
 ### Prerequisites
 
@@ -23,7 +23,7 @@ docker compose version
 
 ```bash
 git clone <your-repo-url>
-cd afrigrowth-ai
+cd KLYA-ai
 
 # Install dependencies (root, frontend, backend)
 npm run install:all
@@ -38,7 +38,7 @@ Create a `.env` at the repo root:
 
 ```env
 # Database
-MONGODB_URI=mongodb://localhost:27017/afrigrowth-ai
+MONGODB_URI=mongodb://localhost:27017/KLYA-ai
 
 # OpenAI
 OPENAI_API_KEY=your_openai_api_key
@@ -152,7 +152,7 @@ npm run dev:backend    # Express on :3001
 ## Project Structure
 
 ```
-afrigrowth-ai/
+KLYA-ai/
 ├── frontend/              # Next.js 14 app (TypeScript, Tailwind)
 │   └── src/
 │       ├── app/           # App Router, pages, layout
@@ -256,7 +256,7 @@ Using Docker init (already configured):
 Manual insert example:
 
 ```bash
-mongosh "mongodb://localhost:27017/afrigrowth-ai" --eval '
+mongosh "mongodb://localhost:27017/KLYA-ai" --eval '
 db.users.insertOne({
   firstName: "Kojo",
   lastName: "Asare",
@@ -324,6 +324,6 @@ Backend request logging is enabled via `morgan` and `winston` (logs in `backend/
 ## Contact & Support
 
 - Internal: open a GitHub issue and tag `devx`
-- External support: support@afrigrowth.ai
+- External support: support@KLYA.ai
 
 
