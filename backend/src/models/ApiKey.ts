@@ -88,7 +88,6 @@ const ApiKeySchema = new Schema<IApiKey>({
 })
 
 // Indexes
-ApiKeySchema.index({ userId: 1 })
 ApiKeySchema.index({ hashedKey: 1 })
 ApiKeySchema.index({ isActive: 1 })
 ApiKeySchema.index({ expiresAt: 1 })
