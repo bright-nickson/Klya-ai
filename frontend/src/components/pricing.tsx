@@ -6,7 +6,7 @@ import { Check, Star } from 'lucide-react'
 const plans = [
   {
     name: 'Starter',
-    price: '₵50',
+    price: '₵0',
     period: '/month',
     description: 'Perfect for individual creators and small businesses',
     features: [
