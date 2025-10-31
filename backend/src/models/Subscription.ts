@@ -185,7 +185,6 @@ const SubscriptionSchema = new Schema<ISubscription>({
 })
 
 // Index for efficient queries
-SubscriptionSchema.index({ userId: 1 })
 SubscriptionSchema.index({ status: 1 })
 SubscriptionSchema.index({ endDate: 1 })
 
