@@ -32,31 +32,67 @@ import dashboardRoutes from './routes/dashboard'
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// ✅ Required for Render, Nginx, etc.
-app.set('trust proxy', 1)
+// ✅ Enhanced proxy configuration
+app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal'])
 
 // ✅ Security headers
-app.use(helmet())
-
-// ✅ CORS setup
-app.use(cors({
-  origin: (origin, callback) => {
-    const allowedOrigins = [
-      'https://klya-ai.vercel.app', //✅ Your frontend
-      'http://localhost:3000',
-      'http://localhost:3003',
-      process.env.FRONTEND_URL // Optional extra
-    ].filter(Boolean)
-
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true)
-    } else {
-      console.warn(`❌ CORS blocked for origin: ${origin}`)
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
-  credentials: true
+app.use(helmet({
+  contentSecurityPolicy: false // Disable CSP for now to prevent errors
 }))
+
+// ✅ CORS setup with enhanced logging
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    const allowedOrigins = new Set([
+      'https://klya-ai.vercel.app',
+      'http://localhost:3000',
+      'http://localhost:3003'
+    ])
+    
+    // Add FRONTEND_URL if it exists
+    if (process.env.FRONTEND_URL) {
+      allowedOrigins.add(process.env.FRONTEND_URL)
+    }
+    
+    const allowedOriginsArray = Array.from(allowedOrigins).filter(Boolean)
+
+    // Log all incoming origins for debugging
+    console.log('Incoming origin:', origin)
+    console.log('Allowed origins:', allowedOriginsArray)
+
+    // Allow requests with no origin (like mobile apps, curl, etc)
+    if (!origin) {
+      console.log('No origin, allowing request')
+      return callback(null, true)
+    }
+
+    if (allowedOriginsArray.includes(origin)) {
+      console.log(`✅ Allowed origin: ${origin}`)
+      return callback(null, true)
+    }
+
+    console.warn(`❌ CORS blocked for origin: ${origin}`)
+    callback(new Error(`Not allowed by CORS. Origin: ${origin}`))
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range']
+}
+
+app.use(cors(corsOptions))
+
+// Log all incoming requests for debugging
+app.use((req, res, next) => {
+  console.log('\n=== New Request ===')
+  console.log('Method:', req.method)
+  console.log('Path:', req.path)
+  console.log('Headers:', req.headers)
+  console.log('IP:', req.ip)
+  console.log('IPs:', req.ips)
+  console.log('X-Forwarded-For:', req.headers['x-forwarded-for'])
+  next()
+})
 
 // ✅ Rate limiter to protect backend
 const limiter = rateLimit({
@@ -85,18 +121,18 @@ app.get('/health', (req, res) => {
   })
 })
 
-// ✅ API routes
-app.use('/api/auth', authRoutes)
-app.use('/api/users', userRoutes)
-app.use('/api/user', userProfileRoutes)
-app.use('/api/content', contentRoutes)
-app.use('/api/audio', audioRoutes)
-app.use('/api/analytics', analyticsRoutes)
-app.use('/api/subscription', subscriptionRoutes)
-app.use('/api/admin', adminRoutes)
-app.use('/api/payments', paymentRoutes)
-app.use('/api/ai', aiRoutes)
-app.use('/api/dashboard', dashboardRoutes)
+// ✅ API routes (without /api prefix since it's in the frontend base URL)
+app.use('/auth', authRoutes)
+app.use('/users', userRoutes)
+app.use('/user', userProfileRoutes)
+app.use('/content', contentRoutes)
+app.use('/audio', audioRoutes)
+app.use('/analytics', analyticsRoutes)
+app.use('/subscription', subscriptionRoutes)
+app.use('/admin', adminRoutes)
+app.use('/payments', paymentRoutes)
+app.use('/ai', aiRoutes)
+app.use('/dashboard', dashboardRoutes)
 
 // ✅ Error handling
 app.use(notFound)
