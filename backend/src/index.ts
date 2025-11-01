@@ -35,6 +35,9 @@ import dashboardRoutes from './routes/dashboard'
 const app = express()
 const PORT = process.env.PORT || 3001
 
+// Trust first proxy (for Render.com)
+app.set('trust proxy', 1)
+
 // Security middleware
 app.use(helmet())
 app.use(cors({
