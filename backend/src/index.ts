@@ -42,9 +42,9 @@ app.use(helmet())
 app.use(cors({
   origin: (origin, callback) => {
     const allowedOrigins = [
+      'https://klya-ai.vercel.app', //✅ Your frontend
       'http://localhost:3000',
       'http://localhost:3003',
-      'https://klya-ai.vercel.app', // ✅ Your frontend
       process.env.FRONTEND_URL // Optional extra
     ].filter(Boolean)
 
