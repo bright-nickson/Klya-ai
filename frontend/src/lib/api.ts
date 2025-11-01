@@ -2,7 +2,12 @@ import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios'
 import toast from 'react-hot-toast'
 
 // API Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
+if (!process.env.NEXT_PUBLIC_API_URL) {
+  throw new Error("NEXT_PUBLIC_API_URL is not defined!");
+}
+
+export const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE_URL = `${API_URL}/api`;
 
 // Create axios instance
 const api: AxiosInstance = axios.create({
