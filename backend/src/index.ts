@@ -1,7 +1,6 @@
 import dotenv from 'dotenv'
 
-// Load environment variables as early as possible so modules that
-// instantiate services which read process.env get the values.
+// Load environment variables early
 dotenv.config()
 
 import express from 'express'
@@ -30,51 +29,53 @@ import paymentRoutes from './routes/payments'
 import aiRoutes from './routes/ai'
 import dashboardRoutes from './routes/dashboard'
 
-// ...existing code...
-
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// Trust first proxy (for Render.com)
+// ✅ Required for Render, Nginx, etc.
 app.set('trust proxy', 1)
 
-// Security middleware
+// ✅ Security headers
 app.use(helmet())
+
+// ✅ CORS setup
 app.use(cors({
   origin: (origin, callback) => {
     const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:3003',
-      process.env.FRONTEND_URL
+      'https://klya-ai.vercel.app', // ✅ Your frontend
+      process.env.FRONTEND_URL // Optional extra
     ].filter(Boolean)
-    
+
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true)
     } else {
+      console.warn(`❌ CORS blocked for origin: ${origin}`)
       callback(new Error('Not allowed by CORS'))
     }
   },
   credentials: true
 }))
 
-// Rate limiting
+// ✅ Rate limiter to protect backend
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: 100,
   message: 'Too many requests from this IP, please try again later.'
 })
 app.use(limiter)
 
-// Body parsing middleware
+// ✅ Body parsing & cookies
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 app.use(cookieParser())
 
-// Compression and logging
+// ✅ Compression & logging
 app.use(compression())
-app.use(morgan('combined', { stream: { write: (message) => logger.info(message.trim()) } }))
+app.use(morgan('combined', { stream: { write: (msg) => logger.info(msg.trim()) } }))
 
-// Health check endpoint
+// ✅ Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
@@ -84,7 +85,7 @@ app.get('/health', (req, res) => {
   })
 })
 
-// API routes
+// ✅ API routes
 app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/user', userProfileRoutes)
@@ -97,36 +98,35 @@ app.use('/api/payments', paymentRoutes)
 app.use('/api/ai', aiRoutes)
 app.use('/api/dashboard', dashboardRoutes)
 
-// Error handling middleware
+// ✅ Error handling
 app.use(notFound)
 app.use(errorHandler)
 
-// Start server
+// ✅ Start the server
 const startServer = async () => {
   try {
-    // Connect to database
     await connectDB()
-    
+    logger.info('✅ MongoDB connected successfully')
+
     app.listen(PORT, () => {
       logger.info(`🚀 Server running on port ${PORT}`)
       logger.info(`📊 Environment: ${process.env.NODE_ENV || 'development'}`)
-      logger.info(`🌍 Health check: http://localhost:${PORT}/health`)
+      logger.info(`🌍 Health check: ${process.env.RENDER_EXTERNAL_URL || 'http://localhost:' + PORT}/health`)
     })
   } catch (error) {
-    logger.error('Failed to start server:', error)
+    logger.error('❌ Failed to start server:', error)
     process.exit(1)
   }
 }
 
-// Handle unhandled promise rejections
+// ✅ Global error handlers
 process.on('unhandledRejection', (err: Error) => {
-  logger.error('Unhandled Promise Rejection:', err)
+  logger.error('💥 Unhandled Promise Rejection:', err)
   process.exit(1)
 })
 
-// Handle uncaught exceptions
 process.on('uncaughtException', (err: Error) => {
-  logger.error('Uncaught Exception:', err)
+  logger.error('💥 Uncaught Exception:', err)
   process.exit(1)
 })
 
