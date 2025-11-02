@@ -167,6 +167,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await response.json()
 
       if (data.success) {
+        // Store token if provided
+        if (data.token && typeof window !== 'undefined') {
+          localStorage.setItem('token', data.token)
+        }
         setUser(data.user)
         toast.success('Account created successfully!')
         router.push('/dashboard')
