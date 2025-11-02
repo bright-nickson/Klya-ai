@@ -136,12 +136,11 @@ function AIGenerator() {
               </p>
             </div>
 
-              <Card className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl overflow-hidden shadow-2xl flex flex-col h-[calc(100dvh-10rem)] sm:h-auto">
+            <Card className="rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-xl overflow-hidden shadow-2xl flex flex-col h-[calc(100dvh-10rem)] sm:h-auto">
               {/* Chat Messages Area */}
               <div 
-                className="chat-container flex-1 min-h-0 overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6"
+                className="chat-container flex-1 min-h-0 overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900/80 dark:to-slate-900"
                 style={{
-                  background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%)',
                   scrollbarWidth: 'thin',
                   scrollbarColor: 'rgba(255, 255, 255, 0.1) transparent',
                   WebkitOverflowScrolling: 'touch',
@@ -168,11 +167,11 @@ function AIGenerator() {
                       'max-w-[90%] sm:max-w-[80%] rounded-2xl p-3 sm:p-4',
                       message.sender === 'user' 
                         ? 'bg-blue-500 text-white' 
-                        : 'bg-white/5 border border-white/10 text-white/90',
+                        : 'bg-gray-50 border border-gray-200 text-gray-800 dark:bg-white/5 dark:border-white/10 dark:text-white/90',
                       'break-words overflow-hidden',
                       message.sender === 'user' ? 'ml-auto' : 'mr-auto'
                     )}>
-                      <div className="prose prose-sm prose-invert max-w-none">
+                      <div className="prose prose-sm dark:prose-invert max-w-none">
                         {message.content.split('\n').map((line, i) => (
                           <p key={i} className="mb-2">{line}</p>
                         ))}
@@ -233,7 +232,7 @@ function AIGenerator() {
               </div>
 
               {/* Input Area */}
-              <div className="border-t border-white/10 bg-white/5 backdrop-blur-xl p-3 sm:p-4 pb-[max(env(safe-area-inset-bottom),0.75rem)]">
+              <div className="border-t border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-xl p-3 sm:p-4 pb-[max(env(safe-area-inset-bottom),0.75rem)]">
                 <form onSubmit={handleSubmit} className="flex gap-2 sm:gap-3 items-center">
                   <div className="flex-1 relative">
                     <Textarea
@@ -242,14 +241,14 @@ function AIGenerator() {
                       onChange={(e) => setPrompt(e.target.value)}
                       onKeyDown={handleKeyDown}
                       placeholder="Ask me anything or describe what you want to create..."
-                      className="min-h-[40px] max-h-32 resize-none pr-10 bg-white/5 border-white/10 text-white placeholder-white/40 focus-visible:ring-blue-500 focus-visible:ring-offset-0 text-sm sm:text-base"
+                      className="min-h-[40px] max-h-32 resize-none pr-10 bg-white border-gray-300 text-gray-900 placeholder-gray-500 dark:bg-white/5 dark:border-white/10 dark:text-white dark:placeholder-white/40 focus-visible:ring-blue-500 focus-visible:ring-offset-0 text-sm sm:text-base"
                       style={{ scrollbarWidth: 'thin' }}
                     />
                     <button
                       type="button"
                       onClick={() => setPrompt('')}
                       className={cn(
-                        'absolute right-2 bottom-2 p-1 rounded-full text-white/40 hover:text-white/80 transition',
+                        'absolute right-2 bottom-2 p-1 rounded-full text-gray-400 hover:text-gray-700 dark:text-white/40 dark:hover:text-white/80 transition',
                         !prompt && 'hidden'
                       )}
                     >
@@ -272,7 +271,7 @@ function AIGenerator() {
                   </Button>
                 </form>
                 
-                <div className="flex flex-wrap gap-x-4 gap-y-2 items-center justify-between mt-3 text-[11px] sm:text-xs text-white/40">
+                <div className="flex flex-wrap gap-x-4 gap-y-2 items-center justify-between mt-3 text-[11px] sm:text-xs text-gray-500 dark:text-white/40">
                   <div className="flex items-center gap-1.5">
                     <Zap className="w-3.5 h-3.5" />
                     <span>Powered by GPT-4</span>
@@ -284,13 +283,13 @@ function AIGenerator() {
                 </div>
 
                 <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="rounded-xl border border-white/10 bg-gradient-to-br from-white/5 to-white/0 p-6 text-center">
+                  <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gradient-to-br dark:from-white/5 dark:to-white/0 p-6 text-center">
                     <div className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-amber-400 bg-clip-text text-transparent mb-2">99.99%</div>
-                    <div className="text-sm text-white/60">Uptime SLA</div>
+                    <div className="text-sm text-gray-600 dark:text-white/60">Uptime SLA</div>
                   </div>
-                  <div className="rounded-xl border border-white/10 bg-gradient-to-br from-white/5 to-white/0 p-6 text-center">
+                  <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gradient-to-br dark:from-white/5 dark:to-white/0 p-6 text-center">
                     <div className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-amber-400 bg-clip-text text-transparent mb-2">&lt;100ms</div>
-                    <div className="text-sm text-white/60">Response Time</div>
+                    <div className="text-sm text-gray-600 dark:text-white/60">Response Time</div>
                   </div>
                 </div>
               </div>
