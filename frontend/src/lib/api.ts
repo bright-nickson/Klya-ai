@@ -116,7 +116,7 @@ api.interceptors.response.use(
         localStorage.removeItem('token');
         window.location.href = '/login';
       }
-    }
+    } else if (error.response?.status === 403) {
       toast.error('You do not have permission to perform this action');
     } else if (error.response?.status === 429) {
       toast.error('Too many requests. Please try again later.');
