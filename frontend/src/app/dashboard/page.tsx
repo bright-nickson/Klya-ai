@@ -51,7 +51,10 @@ export default function Dashboard() {
     if (user && !user.onboardingCompleted) {
       setShowOnboarding(true)
     }
-    fetchDashboardData()
+    // Only fetch dashboard data if user is authenticated
+    if (user) {
+      fetchDashboardData()
+    }
   }, [user])
 
   const fetchDashboardData = async () => {
