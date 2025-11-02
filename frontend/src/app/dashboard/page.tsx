@@ -62,17 +62,17 @@ export default function Dashboard() {
       setLoading(true)
       
       // Fetch dashboard analytics
-      const [dashboardResponse, subscriptionResponse] = await Promise.all([
+      const [dashboardResponse, subscriptionResponse] = await Promise.allSettled([
         analyticsApi.getDashboardStats(),
         subscriptionApi.getSubscription()
       ])
 
-      if (dashboardResponse.data.success) {
-        setDashboardData(dashboardResponse.data.data)
+      if (dashboardResponse.status === 'fulfilled' && dashboardResponse.value.data.success) {
+        setDashboardData(dashboardResponse.value.data.data)
       }
 
-      if (subscriptionResponse.data.success) {
-        setSubscriptionData(subscriptionResponse.data.data)
+      if (subscriptionResponse.status === 'fulfilled' && subscriptionResponse.value.data.success) {
+        setSubscriptionData(subscriptionResponse.value.data.data)
       }
 
       // Generate mock chart data (replace with real API calls)
