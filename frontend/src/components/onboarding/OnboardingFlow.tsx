@@ -164,11 +164,17 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
     setLoading(true)
     try {
-      const response = await fetch('https://klya-ai.vercel.app/api/auth/onboarding', {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`
+      }
+      
+      const response = await fetch('https://klya-ai-backend.onrender.com/api/auth/onboarding', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         credentials: 'include',
         body: JSON.stringify(data),
       })
