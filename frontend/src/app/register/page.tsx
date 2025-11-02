@@ -54,16 +54,20 @@ export default function RegisterPage() {
       return
     }
 
-    const success = await register({
+    // Filter out empty optional fields
+    const registrationData: any = {
       firstName: formData.firstName,
       lastName: formData.lastName,
       email: formData.email,
       password: formData.password,
-      businessName: formData.businessName,
-      businessType: formData.businessType,
-      phoneNumber: formData.phoneNumber,
-      location: formData.location
-    })
+    }
+
+    if (formData.businessName) registrationData.businessName = formData.businessName
+    if (formData.businessType) registrationData.businessType = formData.businessType
+    if (formData.phoneNumber) registrationData.phoneNumber = formData.phoneNumber
+    if (formData.location.city) registrationData.location = formData.location
+
+    const success = await register(registrationData)
 
     if (!success) {
       setError('Registration failed. Please try again.')
