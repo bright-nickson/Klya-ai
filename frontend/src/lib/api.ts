@@ -89,7 +89,7 @@ const api: AxiosInstance = axios.create({
 api.interceptors.request.use(
   (config) => {
     // Add auth token if available
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     if (token) {
       config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${token}`;
@@ -113,10 +113,10 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // Unauthorized - redirect to login
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('auth_token');
+        localStorage.removeItem('token');
         window.location.href = '/login';
       }
-    } else if (error.response?.status === 403) {
+    }
       toast.error('You do not have permission to perform this action');
     } else if (error.response?.status === 429) {
       toast.error('Too many requests. Please try again later.');

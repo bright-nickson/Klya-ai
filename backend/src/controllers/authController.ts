@@ -226,7 +226,8 @@ export const register = async (req: AuthRequest, res: Response, next: NextFuncti
 
     res.status(201).json({
       success: true,
-      user: userResponse
+      user: userResponse,
+      token
     });
 
     logger.info(`New user registered: ${email}`);
@@ -338,7 +339,8 @@ export const login = async (req: AuthRequest, res: Response, next: NextFunction)
 
     res.status(200).json({
       success: true,
-      user: userResponse
+      user: userResponse,
+      token
     });
 
     logger.info(`User logged in: ${email}`);
