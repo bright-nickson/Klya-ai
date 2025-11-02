@@ -19,18 +19,28 @@ export const getSubscription = async (req: AuthRequest, res: Response, next: Nex
       return
     }
 
-    const analytics = await subscriptionService.getSubscriptionAnalytics(userId)
-    if (!analytics) {
+    // Get user with subscription data
+    const user = await User.findById(userId)
+    if (!user) {
       res.status(404).json({
         success: false,
-        error: 'Subscription not found'
+        error: 'User not found'
       })
       return
     }
 
+    // Return user's subscription data
+    const subscriptionData = {
+      currentPlan: user.subscription.plan,
+      status: user.subscription.status,
+      startDate: user.subscription.startDate,
+      endDate: user.subscription.endDate,
+      usage: user.subscription.usage
+    }
+
     res.status(200).json({
       success: true,
-      data: analytics
+      data: subscriptionData
     })
   } catch (error) {
     logger.error('Get subscription error:', error)
