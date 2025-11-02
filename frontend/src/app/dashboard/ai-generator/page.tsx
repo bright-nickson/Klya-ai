@@ -136,10 +136,10 @@ function AIGenerator() {
               </p>
             </div>
 
-            <Card className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl overflow-hidden shadow-2xl">
+              <Card className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl overflow-hidden shadow-2xl flex flex-col h-[calc(100dvh-10rem)] sm:h-auto">
               {/* Chat Messages Area */}
               <div 
-                className="chat-container min-h-[60vh] max-h-[calc(100vh-300px)] overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6"
+                className="chat-container flex-1 min-h-0 overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6"
                 style={{
                   background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%)',
                   scrollbarWidth: 'thin',
@@ -233,8 +233,8 @@ function AIGenerator() {
               </div>
 
               {/* Input Area */}
-              <div className="border-t border-white/10 bg-white/5 backdrop-blur-xl p-3 sm:p-4">
-                <form onSubmit={handleSubmit} className="flex gap-2 sm:gap-3 items-end">
+              <div className="border-t border-white/10 bg-white/5 backdrop-blur-xl p-3 sm:p-4 pb-[max(env(safe-area-inset-bottom),0.75rem)]">
+                <form onSubmit={handleSubmit} className="flex gap-2 sm:gap-3 items-center">
                   <div className="flex-1 relative">
                     <Textarea
                       id="promptInput"
@@ -242,7 +242,7 @@ function AIGenerator() {
                       onChange={(e) => setPrompt(e.target.value)}
                       onKeyDown={handleKeyDown}
                       placeholder="Ask me anything or describe what you want to create..."
-                      className="min-h-[40px] max-h-32 resize-none pr-12 bg-white/5 border-white/10 text-white placeholder-white/40 focus-visible:ring-blue-500 focus-visible:ring-offset-0"
+                      className="min-h-[40px] max-h-32 resize-none pr-10 bg-white/5 border-white/10 text-white placeholder-white/40 focus-visible:ring-blue-500 focus-visible:ring-offset-0 text-sm sm:text-base"
                       style={{ scrollbarWidth: 'thin' }}
                     />
                     <button
@@ -283,7 +283,7 @@ function AIGenerator() {
                   </div>
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-4">
+                <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="rounded-xl border border-white/10 bg-gradient-to-br from-white/5 to-white/0 p-6 text-center">
                     <div className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-amber-400 bg-clip-text text-transparent mb-2">99.99%</div>
                     <div className="text-sm text-white/60">Uptime SLA</div>
