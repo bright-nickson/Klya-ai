@@ -73,17 +73,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkAuthStatus = async () => {
     try {
       const response = await fetch('https://klya-ai-backend.onrender.com/api/auth/me', {
+        method: 'GET',
         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
       
-      if (response.ok) {
-        const data = await response.json()
-        if (data.success) {
-          setUser(data.user)
-        }
+      const data = await response.json()
+      
+      if (response.ok && data.success) {
+        setUser(data.user)
+      } else {
+        // If not authenticated, clear any existing user data
+        setUser(null)
+        // Clear any invalid tokens
+        document.cookie = 'token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
       }
     } catch (error) {
       console.error('Auth check failed:', error)
+      setUser(null)
     } finally {
       setLoading(false)
     }
@@ -103,8 +112,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const data = await response.json()
 
-      if (data.success) {
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed')
+      }
+
+      if (data.success && data.token) {
+        // Store the token in a secure, HTTP-only cookie
+        document.cookie = `token=${data.token}; Path=/; Secure; SameSite=Strict; ${process.env.NODE_ENV === 'production' ? 'Domain=klya-ai.vercel.app' : ''}`
+        
+        // Set the user data
         setUser(data.user)
+        
+        // Set the Authorization header for subsequent requests
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('token', data.token)
+        }
+        
         toast.success('Welcome back!')
         router.push('/dashboard')
         return true
@@ -115,7 +138,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             toast.error(detail.msg || detail.message)
           })
         } else {
-          toast.error(data.error || 'Login failed. Please try again.')
+          toast.error(data.error || 'Login failed. Please check your credentials and try again.')
         }
         return false
       }

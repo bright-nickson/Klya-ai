@@ -43,10 +43,15 @@ app.use(helmet({
 // ✅ CORS setup with enhanced logging
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true)
+    
     const allowedOrigins = new Set([
       'https://klya-ai.vercel.app',
       'http://localhost:3000',
-      'http://localhost:3003'
+      'http://localhost:3003',
+      'https://klya-ai.vercel.app',
+      'https://klya-ai-frontend.vercel.app'
     ])
     
     // Add FRONTEND_URL if it exists
@@ -75,9 +80,26 @@ const corsOptions = {
     callback(new Error(`Not allowed by CORS. Origin: ${origin}`))
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Content-Range', 'X-Content-Range']
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'X-CSRF-Token',
+    'X-Access-Token',
+    'X-Refresh-Token'
+  ],
+  exposedHeaders: [
+    'Content-Range',
+    'X-Content-Range',
+    'Set-Cookie',
+    'X-Access-Token',
+    'X-Refresh-Token'
+  ],
+  optionsSuccessStatus: 200,
+  preflightContinue: false
 }
 
 app.use(cors(corsOptions))

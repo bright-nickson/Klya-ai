@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import { User, IUser } from '../models/User'
 import { MockAuthService } from '../services/mockAuthService'
 import mongoose from 'mongoose'
+import { logger } from '../utils/logger'
 
 export interface AuthRequest extends Request {
   user?: IUser
@@ -17,7 +18,7 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
   try {
     let token: string | undefined
 
-    // Check for token in headers
+    // Check for token in headers (Bearer token)
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
       token = req.headers.authorization.split(' ')[1]
     }
@@ -26,26 +27,58 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
     if (!token && req.cookies && req.cookies.token) {
       token = req.cookies.token
     }
+    
+    // Check for token in query params (for email verification links, etc.)
+    if (!token && req.query.token) {
+      token = req.query.token as string
+    }
 
     // Make sure token exists
     if (!token) {
       res.status(401).json({
         success: false,
-        error: 'Not authorized to access this route'
+        error: 'Not authorized to access this route. No authentication token found.'
       })
       return
     }
 
     try {
+      if (!process.env.JWT_SECRET) {
+        logger.error('JWT_SECRET is not defined')
+        throw new Error('Server configuration error')
+      }
+      
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string }
+      const decoded = jwt.verify(token, process.env.JWT_SECRET) as { id: string }
       
       // Get user from token
-      let user: any
+      let user: IUser | null = null
+      
       if (isMockMode()) {
-        user = await MockAuthService.findUserById(decoded.id)
+        const mockUser = await MockAuthService.findUserById(decoded.id)
+        if (mockUser) {
+          // Convert plain object to Mongoose document
+          user = new User(mockUser)
+        }
       } else {
         user = await User.findById(decoded.id).select('-password')
+      }
+      
+      if (!user) {
+        res.status(401).json({
+          success: false,
+          error: 'User not found or no longer exists'
+        })
+        return
+      }
+      
+      // Check if user is active
+      if (!user.isActive) {
+        res.status(403).json({
+          success: false,
+          error: 'Account is deactivated. Please contact support.'
+        })
+        return
       }
       
       if (!user) {
