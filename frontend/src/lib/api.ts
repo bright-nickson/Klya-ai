@@ -7,7 +7,9 @@ if (!process.env.NEXT_PUBLIC_API_URL) {
 }
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL;
-const API_BASE_URL = `${API_URL}/api`;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ? 
+  `${process.env.NEXT_PUBLIC_API_URL}/api` : 
+  'http://localhost:3001/api';
 
 // Types
 export interface User {
