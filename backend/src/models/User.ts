@@ -114,6 +114,11 @@ const UserSchema = new Schema<IUser>({
   businessType: {
     type: String,
     enum: [
+      'startup',
+      'small-business',
+      'enterprise',
+      'freelancer',
+      'creator',
       'retail',
       'restaurant',
       'technology',

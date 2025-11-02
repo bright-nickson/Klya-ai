@@ -72,13 +72,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await fetch('https://klya-ai-backend.onrender.com/api/auth/me', {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+        const response = await fetch('https://klya-ai-backend.onrender.com/api/auth/me', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          credentials: 'include' // Important for cookies
+        });
       
       const data = await response.json()
       
