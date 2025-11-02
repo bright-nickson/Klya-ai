@@ -19,7 +19,7 @@ export default function TextGeneratorPage() {
       const headers: Record<string, string> = { 'Content-Type': 'application/json' }
       if (token.trim()) headers['Authorization'] = `Bearer ${token.trim()}`
 
-      const res = await fetch('http://localhost:3001/api/ai/content', {
+      const res = await fetch('https://klya-ai.vercel.app/api/ai/content', {
         method: 'POST',
         headers,
         body: JSON.stringify({ prompt: prompt.trim(), contentType: 'marketing', topic: prompt.trim() }),

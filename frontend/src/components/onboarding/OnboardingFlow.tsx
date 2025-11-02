@@ -164,7 +164,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
     setLoading(true)
     try {
-      const response = await fetch('http://localhost:3001/api/auth/onboarding', {
+      const response = await fetch('https://klya-ai.vercel.app/api/auth/onboarding', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

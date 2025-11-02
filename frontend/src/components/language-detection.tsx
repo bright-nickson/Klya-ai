@@ -63,7 +63,7 @@ export function LanguageDetection({ apiToken }: LanguageDetectionProps) {
     setError(null)
 
     try {
-      const response = await fetch('http://localhost:3001/api/ai/detect-language', {
+      const response = await fetch('https://klya-ai.vercel.app/api/ai/detect-language', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
