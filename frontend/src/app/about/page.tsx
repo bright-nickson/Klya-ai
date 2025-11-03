@@ -155,10 +155,16 @@ export default function AboutPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
               {[
-                { name: 'Bright Nkansah', role: 'Founder & CEO', img: '/images/team1.jpg' },
-                { name: 'Ama Boateng', role: 'Product Designer', img: '/images/team2.jpg' },
-                { name: 'Kojo Mensah', role: 'Lead Engineer', img: '/images/team3.jpg' },
-                { name: 'Esi Owusu', role: 'Growth & Ops', img: '/images/team4.jpg' }
+                { name: 'Adu-Ntow Eunice', role: 'Founder & CEO', img: '/images/team1.jpg' },
+                { name: 'Tetteh Collins Anim', role: 'Product Designer', img: '/images/team2.jpg' },
+                { name: 'Callistus Bright', role: 'Lead Engineer', img: '/images/team3.jpg' },
+                { name: 'Sekyere Louis', role: 'Growth & Ops', img: '/images/team4.jpg' },
+                { name: 'Semanhyia Joshua', role: 'AI engineer', img: '/images/team1.jpg' },
+                { name: 'Schwenninger Emanuel', role: 'Frontend Engineer', img: '/images/team1.jpg' },
+                { name: 'Sebi Justice', role: 'Devops engineer', img: '/images/team1.jpg' },
+                { name: 'Segoh Bright', role: 'Data Analyst', img: '/images/team1.jpg' },
+                { name: 'Senyo Kekeli', role: 'Business Development Lead', img: '/images/team1.jpg' },
+                { name: 'Siame Kelvin', role: 'Backend Engineer', img: '/images/team1.jpg' },
               ].map((m) => (
                 <motion.div
                   key={m.name}
