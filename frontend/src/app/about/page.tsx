@@ -76,14 +76,14 @@ export default function AboutPage() {
               transition={{ duration: 0.6 }}
               className="relative rounded-2xl overflow-hidden shadow-lg"
             >
-              <Image
-                src="/images/about-hero-placeholder.jpg"
-                alt="KLYA AI platform interface"
-                width={1200}
-                height={800}
-                className="w-full h-[320px] object-cover sm:h-[420px]"
-                priority
-              />
+                <Image
+                  src="/screenshots/screenshot.png"  // Remove "Why" from the path
+                  alt="KLYA AI platform interface"
+                  width={1200}
+                  height={800}
+                  className="w-full h-[320px] object-cover sm:h-[420px]"
+                  priority
+                />
             </motion.div>
           </div>
         </section>

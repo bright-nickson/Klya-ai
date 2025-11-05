@@ -216,7 +216,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900 dark:text-white">Phone</h3>
-                      <p className="text-muted-foreground">+233 XX XXX XXXX</p>
+                      <p className="text-muted-foreground">+233 54 411 2611</p>
                       <p className="text-sm text-muted-foreground">Mon-Fri, 9AM-6PM GMT</p>
                     </div>
                   </div>
