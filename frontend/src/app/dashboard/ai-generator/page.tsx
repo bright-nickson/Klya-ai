@@ -85,23 +85,49 @@ function AIGenerator() {
     setLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      // Call your API route that handles the OpenAI API
+      const response = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          // You can add more parameters here as needed
+          temperature: 0.7,
+          max_tokens: 1000,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
       
       // Add AI response
       const aiResponse: Message = {
         id: `ai-${Date.now()}`,
         sender: 'ai',
-        content: `I've received your request: "${prompt}". This is a demo interface showcasing how our AI prompt system works. In production, this would connect to our powerful AI models to generate real responses based on your input.`,
+        content: data.choices[0].message.content,
         timestamp: new Date()
       }
 
-      setMessages(prev => [...prev, aiResponse])
+      setMessages(prev => [...prev, aiResponse]);
     } catch (error) {
-      console.error('Error generating response:', error)
-      toast.error('Failed to generate response. Please try again.')
+      console.error('Error generating response:', error);
+      toast.error('Failed to generate response. Please check your API key and try again.');
+      
+      // Add error message to chat
+      const errorResponse: Message = {
+        id: `error-${Date.now()}`,
+        sender: 'ai',
+        content: 'Sorry, I encountered an error. Please make sure your OpenAI API key is properly set up in the .env.local file.',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorResponse]);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
