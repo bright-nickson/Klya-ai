@@ -53,6 +53,7 @@ const Toast = React.forwardRef<
     />
   )
 })
+Toast.displayName = 'Toast'
 
 const ToastAction = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Action>,
@@ -67,6 +68,7 @@ const ToastAction = React.forwardRef<
     {...props}
   />
 ))
+ToastAction.displayName = 'ToastAction'
 
 const ToastClose = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Close>,
@@ -84,6 +86,7 @@ const ToastClose = React.forwardRef<
     <X className="h-4 w-4" />
   </ToastPrimitives.Close>
 ))
+ToastClose.displayName = 'ToastClose'
 
 const ToastTitle = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Title>,
@@ -95,6 +98,7 @@ const ToastTitle = React.forwardRef<
     {...props}
   />
 ))
+ToastTitle.displayName = 'ToastTitle'
 
 const ToastDescription = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Description>,
@@ -106,13 +110,12 @@ const ToastDescription = React.forwardRef<
     {...props}
   />
 ))
+ToastDescription.displayName = 'ToastDescription'
 
-type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>
-type ToastActionElement = React.ReactElement<typeof ToastAction>
+export type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>
+export type ToastActionElement = React.ReactElement<typeof ToastAction>
 
 export {
-  type ToastProps,
-  type ToastActionElement,
   ToastProvider,
   ToastViewport,
   Toast,
