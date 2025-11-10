@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { CheckoutForm } from '@/components/checkout/CheckoutForm';
 
@@ -11,7 +11,7 @@ interface Plan {
   billing: 'monthly' | 'yearly';
 }
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const searchParams = useSearchParams();
   const [selectedPlan, setSelectedPlan] = useState<Plan>({
     name: 'Starter',
@@ -100,5 +100,18 @@ export default function CheckoutPage() {
         />
       </div>
     </div>
+  );
+}
+
+// This is the main page component that wraps the content with Suspense
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }

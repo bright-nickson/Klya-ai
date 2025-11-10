@@ -125,15 +125,15 @@ export default function Analytics() {
 
   // Generate chart data from the API response
   const chartData = {
-    labels: (analyticsData.weeklyTrend || []).map(item => 
+    labels: (analyticsData.weeklyTrend || []).map((item: { date?: string }) => 
       item?.date ? new Date(item.date).toLocaleDateString('en-US', { weekday: 'short' }) : ''
     ) || [],
-    contentGenerations: (analyticsData.weeklyTrend || []).map(item => item?.count || 0) || [],
+    contentGenerations: (analyticsData.weeklyTrend || []).map((item: { count?: number }) => item?.count || 0) || [],
     successRate: Array(analyticsData.weeklyTrend?.length || 0).fill(analyticsData.successRate || 0)
   }
 
   // Map content type data for the UI
-  const contentTypeStats = (analyticsData.contentByType || []).map((item, index) => ({
+  const contentTypeStats = (analyticsData.contentByType || []).map((item: { _id?: string; count?: number }, index: number) => ({
     type: (item && item._id) ? String(item._id) : 'Unknown',
     count: (item && typeof item.count === 'number') ? item.count : 0,
     color: [
@@ -364,7 +364,7 @@ export default function Analytics() {
                 Content Generation Trend
               </motion.h2>
               <div className="h-64 flex items-end justify-between space-x-2">
-                {chartData.contentGenerations.map((value, index) => (
+                {chartData.contentGenerations.map((value: number, index: number) => (
                   <motion.div 
                     key={index} 
                     initial={{ height: 0, opacity: 0 }}
@@ -406,7 +406,7 @@ export default function Analytics() {
                 Language Distribution
               </motion.h2>
               <div className="space-y-4">
-                {analyticsData.contentByLanguage.slice(0, 4).map((lang, index) => (
+                {analyticsData.contentByLanguage.slice(0, 4).map((lang: { _id: string; count: number }, index: number) => (
                   <motion.div 
                     key={index}
                     initial={{ opacity: 0, x: -20 }}
@@ -423,14 +423,14 @@ export default function Analytics() {
                         transition={{ duration: 0.5, delay: 2.3 + index * 0.1 }}
                         className="text-sm text-gray-600 dark:text-gray-400"
                       >
-                        {lang.count} ({Math.round((lang.count / Math.max(1, analyticsData.contentByLanguage.reduce((sum, l) => sum + l.count, 0))) * 100)}%)
+                        {lang.count} ({Math.round((lang.count / Math.max(1, analyticsData.contentByLanguage.reduce((sum: number, l: { count: number }) => sum + l.count, 0))) * 100)}%)
                       </motion.span>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                       <motion.div 
                         initial={{ width: 0 }}
                         animate={{
-                          width: `${Math.round((lang.count / Math.max(1, analyticsData.contentByLanguage.reduce((sum, l) => sum + l.count, 0))) * 100)}%`
+                          width: `${Math.round((lang.count / Math.max(1, analyticsData.contentByLanguage.reduce((sum: number, l: { count: number }) => sum + l.count, 0))) * 100)}%`
                         }}
                         transition={{ duration: 1, delay: 2.4 + index * 0.1, type: 'spring' }}
                         className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full"
