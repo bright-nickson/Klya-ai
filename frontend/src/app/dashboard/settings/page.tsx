@@ -3,11 +3,13 @@
 import React, { useState } from 'react'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
-import { User, Lock, Bell, CreditCard, Save } from 'lucide-react'
+import { User, Lock, Bell, CreditCard, Save, Share2 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
 export default function Settings() {
+  const router = useRouter()
   const { user, updateUser } = useAuth()
   const [activeTab, setActiveTab] = useState('profile')
   const [loading, setLoading] = useState(false)
@@ -36,6 +38,7 @@ export default function Settings() {
     { id: 'security', label: 'Security', icon: Lock },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'billing', label: 'Billing', icon: CreditCard },
+    { id: 'social-accounts', label: 'Social Accounts', icon: Share2 },
   ]
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
@@ -152,12 +155,22 @@ export default function Settings() {
               <nav className="space-y-1">
                 {tabs.map((tab) => {
                   const Icon = tab.icon
+                  const isActive = activeTab === tab.id
+                  
+                  const handleClick = () => {
+                    if (tab.id === 'social-accounts') {
+                      router.push('/dashboard/settings/social-accounts')
+                    } else {
+                      setActiveTab(tab.id)
+                    }
+                  }
+                  
                   return (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
+                      onClick={handleClick}
                       className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                        activeTab === tab.id
+                        isActive
                           ? 'bg-primary text-white'
                           : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                       }`}
