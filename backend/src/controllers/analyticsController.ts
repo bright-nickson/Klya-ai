@@ -187,27 +187,14 @@ export const getDashboard = async (req: AuthRequest, res: Response, next: NextFu
       return
     }
 
-    // Mock content history (in real implementation, this would come from a Content model)
-    const contentHistory = [
-      {
-        id: 'cont_abc123',
-        contentType: 'blog_post',
-        topic: 'Mobile Money benefits',
-        language: 'en',
-        wordCount: 850,
-        excerpt: 'Mobile Money has revolutionized financial services...',
-        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-      },
-      {
-        id: 'cont_def456',
-        contentType: 'social_media',
-        topic: 'Business tips',
-        language: 'tw',
-        wordCount: 150,
-        excerpt: 'Akwaaba! Here are some business tips...',
-        createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
-      }
-    ]
+    // Get user's content history from the database
+    const contentHistory = await Content.find({
+      user: user._id,
+      createdAt: { $gte: dateRange.start, $lte: dateRange.end }
+    })
+    .sort({ createdAt: -1 })
+    .select('contentType topic language wordCount excerpt createdAt')
+    .lean()
 
     res.status(200).json({
       success: true,
@@ -220,23 +207,24 @@ export const getDashboard = async (req: AuthRequest, res: Response, next: NextFu
           imagesCreated: user.subscription.usage.imageGenerations || 0,
           totalApiCalls: user.subscription.usage.apiCalls
         },
-        contentBreakdown: {
-          blog_post: contentHistory.filter(c => c.contentType === 'blog_post').length,
-          social_media: contentHistory.filter(c => c.contentType === 'social_media').length,
-          email: 0,
-          ad_copy: 0,
-          product_description: 0
-        },
-        languageUsage: {
-          en: contentHistory.filter(c => c.language === 'en').length,
-          tw: contentHistory.filter(c => c.language === 'tw').length,
-          ga: 0,
-          ee: 0,
-          ha: 0
-        },
+        contentBreakdown: contentHistory.reduce<Record<string, number>>((acc, content) => {
+          if (content.type) {
+            const type = String(content.type);
+            acc[type] = (acc[type] || 0) + 1;
+          }
+          return acc;
+        }, {}),
+        languageUsage: contentHistory.reduce<Record<string, number>>((acc, content) => {
+          if (content.language) {
+            const lang = String(content.language);
+            acc[lang] = (acc[lang] || 0) + 1;
+          }
+          return acc;
+        }, {}),
         trends: {
-          contentGenerationTrend: '+25%',
-          transcriptionTrend: '+12%'
+          // These would be calculated based on previous period comparison in a real implementation
+          contentGenerationTrend: '0%',
+          transcriptionTrend: '0%'
         }
       }
     })

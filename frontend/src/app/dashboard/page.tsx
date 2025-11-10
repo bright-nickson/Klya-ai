@@ -8,7 +8,7 @@ import { AnalyticsChart } from '@/components/dashboard/AnalyticsChart'
 import { RecentActivity } from '@/components/dashboard/RecentActivity'
 import { useAuth } from '@/contexts/AuthContext'
 import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow'
-import { analyticsApi, subscriptionApi } from '@/lib/api'
+import { analyticsApi, subscriptionApi, contentApi, audioApi } from '@/lib/api'
 import Link from 'next/link'
 import { 
   TrendingUp, 
@@ -36,15 +36,59 @@ import {
 export default function Dashboard() {
   const { user } = useAuth()
   const [showOnboarding, setShowOnboarding] = useState(false)
-  const [dashboardData, setDashboardData] = useState<any>(null)
-  const [subscriptionData, setSubscriptionData] = useState<any>(null)
-  const [chartData, setChartData] = useState<any>({
+  // Define types for our data
+  interface DashboardData {
+    totalContent?: number;
+    totalAudioTranscriptions?: number;
+    totalImageGenerations?: number;
+  }
+
+  interface SubscriptionData {
+    status?: string;
+    plan?: string;
+    trialDaysRemaining?: number;
+    usage?: {
+      contentGenerations?: { used: number; limit: number };
+      audioTranscriptions?: { used: number; limit: number };
+      imageGenerations?: { used: number; limit: number };
+      apiCalls?: { used: number; limit: number };
+    };
+    features?: string[];
+  }
+
+  interface ChartData {
+    usage: Array<{
+      name: string;
+      content: number;
+      audio: number;
+      images: number;
+    }>;
+    contentTypes: any[];
+    languages: any[];
+  }
+
+  type ActivityType = 'content' | 'audio' | 'image' | 'api';
+  
+  interface ActivityItem {
+    id: string;
+    type: ActivityType;
+    title: string;
+    description: string;
+    status: 'success' | 'pending' | 'failed';
+    timestamp: string;
+    metadata: Record<string, any>;
+  }
+
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null);
+  const [chartData, setChartData] = useState<ChartData>({
     usage: [],
     contentTypes: [],
     languages: []
-  })
-  const [recentActivity, setRecentActivity] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+  });
+  const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [apiErrors, setApiErrors] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     // Check if user needs onboarding
@@ -59,82 +103,235 @@ export default function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
+      setApiErrors({});
       
-      // Fetch dashboard analytics
-      const [dashboardResponse, subscriptionResponse] = await Promise.allSettled([
-        analyticsApi.getDashboardStats(),
-        subscriptionApi.getSubscription()
-      ])
+      // Define a type for our API responses
+      type ApiResponse<T> = {
+        data?: {
+          success: boolean;
+          data: T;
+          message?: string;
+        };
+        error?: boolean;
+        message?: string;
+      };
 
-      if (dashboardResponse.status === 'fulfilled' && dashboardResponse.value.data.success) {
-        setDashboardData(dashboardResponse.value.data.data)
-      }
+      // Define a proper type for API responses with error handling
+      type ApiResponseWrapper<T> = {
+        data?: {
+          success: boolean;
+          data: T;
+          message?: string;
+        };
+        error?: boolean;
+        message?: string;
+      };
 
-      if (subscriptionResponse.status === 'fulfilled' && subscriptionResponse.value.data.success) {
-        setSubscriptionData(subscriptionResponse.value.data.data)
-      }
-
-      // Generate mock chart data (replace with real API calls)
-      setChartData({
-        usage: [
-          { name: 'Mon', content: 12, audio: 3, images: 5 },
-          { name: 'Tue', content: 19, audio: 5, images: 8 },
-          { name: 'Wed', content: 15, audio: 2, images: 6 },
-          { name: 'Thu', content: 25, audio: 8, images: 12 },
-          { name: 'Fri', content: 22, audio: 6, images: 9 },
-          { name: 'Sat', content: 18, audio: 4, images: 7 },
-          { name: 'Sun', content: 16, audio: 3, images: 5 }
-        ],
-        contentTypes: [
-          { name: 'Blog Posts', value: 45 },
-          { name: 'Social Media', value: 30 },
-          { name: 'Emails', value: 15 },
-          { name: 'Product Descriptions', value: 10 }
-        ],
-        languages: [
-          { name: 'English', value: 60 },
-          { name: 'Twi', value: 25 },
-          { name: 'Ga', value: 10 },
-          { name: 'Ewe', value: 5 }
-        ]
-      })
-
-      // Generate mock recent activity
-      setRecentActivity([
-        {
-          id: '1',
-          type: 'content',
-          title: 'Blog post generated',
-          description: 'Created content about mobile money benefits',
-          status: 'success',
-          timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-          metadata: { language: 'en', wordCount: 850, tokens: 1200 }
-        },
-        {
-          id: '2',
-          type: 'audio',
-          title: 'Audio transcribed',
-          description: 'Transcribed customer interview',
-          status: 'success',
-          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          metadata: { language: 'tw', duration: 180 }
-        },
-        {
-          id: '3',
-          type: 'content',
-          title: 'Social media post',
-          description: 'Generated promotional content',
-          status: 'success',
-          timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-          metadata: { language: 'en', wordCount: 120, tokens: 180 }
+      // Helper function to wrap API calls with error handling
+      const wrapApiCall = async <T,>(
+        promise: Promise<{ data: T }>,
+        errorMessage: string
+      ): Promise<{ data?: T; error?: boolean; message?: string }> => {
+        try {
+          const res = await promise;
+          return { data: res.data };
+        } catch (error: any) {
+          return {
+            error: true,
+            message: error.response?.data?.message || errorMessage
+          };
         }
-      ])
+      };
+
+      // Fetch all data in parallel with proper typing
+      const [
+        dashboardResponse,
+        subscriptionResponse,
+        usageAnalyticsResponse,
+        contentAnalyticsResponse,
+        contentHistoryResponse,
+        audioHistoryResponse
+      ] = await Promise.all([
+        wrapApiCall(analyticsApi.getDashboardStats(), 'Failed to load dashboard stats'),
+        wrapApiCall(subscriptionApi.getSubscription(), 'Failed to load subscription data'),
+        wrapApiCall(analyticsApi.getUsageAnalytics('week'), 'Failed to load usage analytics'),
+        wrapApiCall(analyticsApi.getContentAnalytics('month'), 'Failed to load content analytics'),
+        wrapApiCall(contentApi.getHistory(1, 5), 'Failed to load content history'),
+        wrapApiCall(audioApi.getTranscriptions(1, 5), 'Failed to load audio transcriptions')
+      ]);
+
+      // Helper function to process API responses
+      const processResponse = (
+        response: PromiseSettledResult<ApiResponse<any>>, 
+        setter: (data: any) => void, 
+        errorKey: string
+      ): boolean => {
+        if (response.status === 'fulfilled' && !response.value.error && response.value.data?.success) {
+          setter(response.value.data.data);
+          return true;
+        } else {
+          const errorMessage = response.status === 'rejected' 
+            ? response.reason?.message || 'Unknown error occurred'
+            : response.value?.message || 'Failed to load data';
+          
+          setApiErrors(prev => ({
+            ...prev,
+            [errorKey]: errorMessage
+          }));
+          return false;
+        }
+      };
+
+      // Process dashboard and subscription responses
+      if (!dashboardResponse.error && dashboardResponse.data) {
+        setDashboardData(dashboardResponse.data as DashboardData);
+      } else if (dashboardResponse.error) {
+        setApiErrors(prev => ({
+          ...prev,
+          dashboard: dashboardResponse.message || 'Failed to load dashboard data'
+        }));
+      }
+
+      if (!subscriptionResponse.error && subscriptionResponse.data) {
+        setSubscriptionData(subscriptionResponse.data as SubscriptionData);
+      } else if (subscriptionResponse.error) {
+        setApiErrors(prev => ({
+          ...prev,
+          subscription: subscriptionResponse.message || 'Failed to load subscription data'
+        }));
+      }
+      
+      // Process usage analytics with fallback to empty array
+      if (!usageAnalyticsResponse.error && usageAnalyticsResponse.data?.data) {
+        const dashboardData = usageAnalyticsResponse.data.data;
+        
+        // Convert the usage data to the format expected by the chart
+        const usageChartData = [{
+          name: 'Usage',
+          content: dashboardData.usage?.contentGenerations || 0,
+          audio: dashboardData.usage?.audioTranscriptions || 0,
+          images: dashboardData.usage?.imageGenerations || 0
+        }];
+        
+        setChartData(prev => ({
+          ...prev,
+          usage: usageChartData
+        }));
+      } else if (usageAnalyticsResponse.error) {
+        setApiErrors(prev => ({
+          ...prev,
+          usageAnalytics: usageAnalyticsResponse.message || 'Failed to load usage analytics'
+        }));
+      }
+
+      // Process content analytics with fallback to empty arrays
+      if (!contentAnalyticsResponse.error && contentAnalyticsResponse.data?.data) {
+        const contentData = contentAnalyticsResponse.data.data;
+        
+        // Use the data from the dashboard endpoint for content types and languages
+        const contentTypes = contentData.overview?.contentTypes || [];
+        const languages = contentData.overview?.languages || [];
+        
+        // Convert to chart format
+        const contentTypesChartData = Array.isArray(contentTypes) 
+          ? contentTypes.map((item: any) => ({
+              name: item._id || 'Unknown',
+              value: item.count || 0
+            }))
+          : [];
+          
+        const languagesChartData = Array.isArray(languages)
+          ? languages.map((item: any) => ({
+              name: item._id || 'Unknown',
+              value: item.count || 0
+            }))
+          : [];
+        
+        setChartData((prev: any) => ({
+          ...prev,
+          contentTypes: contentTypesChartData,
+          languages: languagesChartData
+        }));
+      }
+
+      // Process recent activity
+      const recentActivities = [];
+      
+      // Process content history with fallback to empty array
+      if (!contentHistoryResponse.error && contentHistoryResponse.data) {
+        const contentItems = Array.isArray(contentHistoryResponse.data) 
+          ? contentHistoryResponse.data 
+          : [];
+        if (Array.isArray(contentItems)) {
+          recentActivities.push(
+            ...contentItems.map((item: any) => ({
+              id: item.id || Math.random().toString(36).substr(2, 9),
+              type: 'content' as const,
+              title: `Generated: ${item.type || 'Content'}`,
+              description: item.title || 'New content generated',
+              status: 'success' as const,
+              timestamp: item.createdAt || new Date().toISOString(),
+              metadata: {
+                language: item.language || 'en',
+                wordCount: item.wordCount || 0,
+                tokens: item.tokenCount || 0
+              }
+            }))
+          );
+        }
+      }
+
+      // Process audio history with fallback to empty array
+      if (!audioHistoryResponse.error && audioHistoryResponse.data) {
+        const audioItems = Array.isArray(audioHistoryResponse.data)
+          ? audioHistoryResponse.data
+          : [];
+        if (Array.isArray(audioItems)) {
+          recentActivities.push(
+            ...audioItems.map((item: any) => ({
+              id: item.id || Math.random().toString(36).substr(2, 9),
+              type: 'audio' as const,
+              title: 'Audio Transcribed',
+              description: item.filename || 'Audio file processed',
+              status: item.status === 'success' ? 'success' as const : 'failed' as const,
+              timestamp: item.createdAt || new Date().toISOString(),
+              metadata: {
+                language: item.language || 'en',
+                duration: item.duration || 0
+              }
+            }))
+          );
+        }
+      }
+      
+      // Add fallback data if no activities found
+      if (recentActivities.length === 0) {
+        recentActivities.push({
+          id: '1',
+          type: 'content' as const,
+          title: 'Welcome to Klya AI',
+          description: 'Get started by creating your first content',
+          status: 'success' as const,
+          timestamp: new Date().toISOString(),
+          metadata: {}
+        });
+      }
+
+      // Sort activities by timestamp and take the 5 most recent
+      const sortedActivities = recentActivities
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .slice(0, 5);
+
+      setRecentActivity(sortedActivities);
 
     } catch (error) {
-      console.error('Failed to fetch dashboard data:', error)
+      console.error('Error fetching dashboard data:', error);
+      setApiErrors({
+        general: 'Failed to load dashboard data. Please try again later.'
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -153,51 +350,59 @@ export default function Dashboard() {
       href: '/dashboard/ai-generator', 
       icon: Sparkles, 
       color: 'bg-purple-500',
-      description: 'Create AI-powered content'
+      description: 'Create AI-powered content',
+      disabled: false
     },
     { 
       label: 'Transcribe Audio', 
       href: '/dashboard/audio', 
       icon: Mic, 
       color: 'bg-blue-500',
-      description: 'Convert speech to text'
+      description: 'Convert speech to text',
+      disabled: !subscriptionData?.features?.includes('audio_transcription')
     },
     { 
       label: 'View Analytics', 
       href: '/dashboard/analytics', 
       icon: BarChart3, 
       color: 'bg-green-500',
-      description: 'Track your performance'
+      description: 'Track your performance',
+      disabled: false
     },
     { 
-      label: 'Subscription', 
+      label: subscriptionData?.status === 'active' ? 'Manage Subscription' : 'Upgrade', 
       href: '/dashboard/subscription', 
       icon: CreditCard, 
       color: 'bg-orange-500',
-      description: 'Manage your plan'
+      description: subscriptionData?.status === 'active' ? 'Manage your plan' : 'Upgrade your plan',
+      disabled: false
     },
   ]
 
   const achievements = [
     { 
       label: 'First Generation', 
-      unlocked: (subscriptionData?.usage?.contentGenerations?.used || 0) > 0, 
-      icon: Award 
+      unlocked: (dashboardData?.totalContent || 0) > 0, 
+      icon: Award,
+      description: 'Created your first piece of content'
     },
     { 
-      label: '10 Generations', 
-      unlocked: (subscriptionData?.usage?.contentGenerations?.used || 0) >= 10, 
-      icon: Award 
+      label: 'Content Creator', 
+      unlocked: (dashboardData?.totalContent || 0) >= 10, 
+      icon: Award,
+      description: 'Created 10+ pieces of content'
     },
     { 
-      label: '100 Generations', 
-      unlocked: (subscriptionData?.usage?.contentGenerations?.used || 0) >= 100, 
-      icon: Award 
+      label: 'Power User', 
+      unlocked: (dashboardData?.totalContent || 0) >= 50, 
+      icon: Award,
+      description: 'Created 50+ pieces of content'
     },
     { 
       label: 'Audio Expert', 
-      unlocked: (subscriptionData?.usage?.audioTranscriptions?.used || 0) >= 5, 
-      icon: Award 
+      unlocked: (dashboardData?.totalAudioTranscriptions || 0) >= 5, 
+      icon: Award,
+      description: 'Transcribed 5+ audio files'
     },
   ]
 
@@ -275,27 +480,30 @@ export default function Dashboard() {
               </h2>
               <div className="space-y-3">
                 {quickActions.map((action, index) => {
-                  const Icon = action.icon
+                  const Icon = action.icon;
                   return (
                     <Link
                       key={index}
                       href={action.href}
-                      className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group"
+                      className={`flex items-center space-x-3 p-3 rounded-lg transition-all ${action.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                      onClick={(e) => action.disabled ? e.preventDefault() : null}
                     >
-                      <div className={`p-2 ${action.color} rounded-lg`}>
-                        <Icon className="w-4 h-4 text-white" />
+                      <div className={`p-2 rounded-lg ${action.color} text-white`}>
+                        <Icon className="w-5 h-5" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-primary transition-colors">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                           {action.label}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                           {action.description}
                         </p>
                       </div>
-                      <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
+                      {!action.disabled && (
+                        <ArrowUpRight className="w-4 h-4 text-gray-400" />
+                      )}
                     </Link>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -355,12 +563,11 @@ export default function Dashboard() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Current Plan: {subscriptionData.currentPlan}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {subscriptionData.status === 'trial' && subscriptionData.trialDaysRemaining 
+                  {subscriptionData?.status === 'trial' && subscriptionData?.trialDaysRemaining 
                     ? `${subscriptionData.trialDaysRemaining} days left in trial`
-                    : `Status: ${subscriptionData.status}`
+                    : `Status: ${subscriptionData?.status}`
                   }
                 </p>
               </div>
@@ -370,21 +577,15 @@ export default function Dashboard() {
               >
                 Manage Plan
               </Link>
-            </div>
-            
-            {/* Usage Progress Bars */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {Object.entries(subscriptionData.usage || {}).map(([key, usage]: [string, any]) => (
-                <div key={key} className="bg-white dark:bg-gray-800 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
-                      {key.replace(/([A-Z])/g, ' $1').trim()}
-                    </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
+              {subscriptionData?.usage && Object.entries(subscriptionData.usage).map(([type, usage]: [string, any]) => (
+                <div key={type} className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="font-medium capitalize">{type.replace(/([A-Z])/g, ' $1').trim()}</span>
+                    <span>
                       {usage.used}/{usage.limit === -1 ? '∞' : usage.limit}
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                  <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                     <div 
                       className="bg-primary h-2 rounded-full transition-all duration-300"
                       style={{ 

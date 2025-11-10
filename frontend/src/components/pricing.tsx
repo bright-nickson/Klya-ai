@@ -2,61 +2,8 @@
 
 import { motion } from 'framer-motion'
 import { Check, Star } from 'lucide-react'
-
-const plans = [
-  {
-    name: 'Starter',
-    price: '₵0',
-    period: '/month',
-    description: 'Perfect for individual creators and small businesses',
-    features: [
-      '5 AI content generations per day',
-      'Basic voice transcription (1 hour/month)',
-      'English and Twi language support',
-      'Mobile app access',
-      'Email support',
-      'Basic analytics'
-    ],
-    popular: false,
-    cta: 'Start Free Trial'
-  },
-  {
-    name: 'Professional',
-    price: '₵150',
-    period: '/month',
-    description: 'Ideal for growing businesses and teams',
-    features: [
-      'Unlimited AI content generation',
-      'Advanced voice transcription (10 hours/month)',
-      'All Ghanaian languages support',
-      'Team collaboration (up to 5 members)',
-      'Priority support',
-      'Advanced analytics & insights',
-      'Custom templates',
-      'API access'
-    ],
-    popular: true,
-    cta: 'Start Free Trial'
-  },
-  {
-    name: 'Enterprise',
-    price: 'Custom',
-    period: '',
-    description: 'For large organizations with specific needs',
-    features: [
-      'Everything in Professional',
-      'Unlimited team members',
-      'Custom AI model training',
-      'Dedicated account manager',
-      '24/7 phone support',
-      'Custom integrations',
-      'On-premise deployment',
-      'SLA guarantee'
-    ],
-    popular: false,
-    cta: 'Contact Sales'
-  }
-]
+import Link from 'next/link'
+import { pricingPlans } from '@/config/pricing'
 
 export function Pricing() {
   return (
@@ -82,7 +29,7 @@ export function Pricing() {
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {plans.map((plan, index) => (
+          {pricingPlans.map((plan, index) => (
             <motion.div
               key={plan.name}
               initial={{ opacity: 0, y: 20 }}
@@ -105,12 +52,19 @@ export function Pricing() {
               )}
 
               <div className="text-center mb-8">
-                <h3 className="font-display text-2xl font-bold mb-2">{plan.name}</h3>
-                <p className="text-muted-foreground mb-4">{plan.description}</p>
-                <div className="flex items-baseline justify-center">
-                  <span className="text-4xl font-bold">{plan.price}</span>
-                  <span className="text-muted-foreground ml-1">{plan.period}</span>
-                </div>
+                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                <p className="text-4xl font-bold mb-2">
+                  {plan.monthly === null ? 'Custom' : `₵${plan.monthly}`}
+                  <span className="text-lg font-normal text-muted-foreground">
+                    {plan.monthly !== null ? '/month' : ''}
+                  </span>
+                </p>
+                {plan.yearly !== null && plan.monthly !== null && plan.monthly > 0 && (
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Save {Math.round((1 - plan.yearly / (plan.monthly * 12)) * 100)}% annually
+                  </p>
+                )}
+                <p className="text-muted-foreground mb-6">{plan.description}</p>
               </div>
 
               <ul className="space-y-4 mb-8">
@@ -122,15 +76,18 @@ export function Pricing() {
                 ))}
               </ul>
 
-              <button
-                className={`w-full btn btn-enhanced ${
-                  plan.popular 
-                    ? 'btn-primary hover-glow' 
-                    : 'btn-outline hover-scale'
+              <Link
+                href={
+                  plan.id === 'enterprise' 
+                    ? '/contact' 
+                    : `/checkout?plan=${plan.id}&price=${plan.monthly}&billing=monthly`
+                }
+                className={`btn w-full ${
+                  plan.popular ? 'btn-primary' : 'btn-outline'
                 }`}
               >
                 {plan.cta}
-              </button>
+              </Link>
             </motion.div>
           ))}
         </div>

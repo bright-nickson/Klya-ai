@@ -1,55 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { CheckCircle, Sparkles, ArrowRight, Star, TrendingUp } from 'lucide-react'
-
-const plans = [
-  {
-    name: 'Starter',
-    monthly: 0,
-    yearly: 0,
-    description: 'Perfect for individuals exploring AI tools for the first time.',
-    features: [
-      'Up to 5 AI generations per day',
-      'Access to content and translation tools',
-      'Basic analytics dashboard',
-      'Community support'
-    ],
-    highlight: false
-  },
-  {
-    name: 'Pro',
-    monthly: 199,
-    yearly: 1990,
-    description: 'For small teams and creators who need consistent AI output.',
-    features: [
-      'Unlimited content generations',
-      'Priority AI processing speed',
-      'Full analytics suite',
-      'Email & chat support',
-      'Voice transcription tools'
-    ],
-    highlight: true
-  },
-  {
-    name: 'Enterprise',
-    monthly: null,
-    yearly: null,
-    description: 'Tailored for agencies, schools, and large organizations.',
-    features: [
-      'Dedicated AI models & custom integrations',
-      'Unlimited team members',
-      '24/7 premium support',
-      'Private deployment options',
-      'Training & onboarding sessions'
-    ],
-    highlight: false
-  }
-]
+import { pricingPlans, pricingFeatures } from '@/config/pricing'
 
 export default function PricingPage() {
   const [billing, setBilling] = useState<'monthly' | 'yearly'>('monthly')
@@ -105,34 +62,36 @@ export default function PricingPage() {
               </button>
               <span className={`${billing === 'yearly' ? 'text-primary font-semibold' : 'text-muted-foreground'}`}>
                 Yearly
+                <span className="ml-1 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                  Save up to 17%
+                </span>
               </span>
             </div>
           </motion.div>
 
           {/* Pricing Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-4">
-            {plans.map((plan, index) => {
-              const isEnterprise = plan.name === 'Enterprise'
-              const price =
-                billing === 'monthly'
-                  ? plan.monthly
-                  : plan.yearly
+            {pricingPlans.map((plan, index) => {
+              const isEnterprise = plan.id === 'enterprise';
+              const price = billing === 'monthly' ? plan.monthly : plan.yearly;
+              const displayPrice = price === null ? 'Custom' : `₵${price}`;
+              const displayPeriod = !isEnterprise ? `/${billing === 'monthly' ? 'month' : 'year'}` : '';
 
               return (
                 <motion.div
-                  key={plan.name}
+                  key={plan.id}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   viewport={{ once: true }}
                   className={`card p-8 rounded-3xl border hover-lift hover-glow transition-all duration-300 ${
-                    plan.highlight
+                    plan.popular
                       ? 'border-primary bg-primary/5 dark:bg-primary/10'
                       : 'border-gray-200 dark:border-gray-700'
                   }`}
                 >
                   <div className="flex justify-center mb-6">
-                    {plan.highlight ? (
+                    {plan.popular ? (
                       <Star className="text-primary h-8 w-8" />
                     ) : (
                       <TrendingUp className="text-secondary h-8 w-8" />
@@ -142,18 +101,14 @@ export default function PricingPage() {
                   <h3 className="text-2xl font-semibold mb-2">{plan.name}</h3>
                   <p className="text-muted-foreground mb-6">{plan.description}</p>
 
-                  {!isEnterprise ? (
-                    <div className="text-4xl font-bold mb-6">
-                      ₵{price?.toLocaleString()}
-                      {plan.monthly !== 0 && (
-                        <span className="text-base font-normal text-muted-foreground ml-1">
-                          /{billing === 'monthly' ? 'month' : 'year'}
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="text-3xl font-bold mb-6">Custom</div>
-                  )}
+                  <div className="text-4xl font-bold mb-6">
+                    {displayPrice}
+                    {!isEnterprise && (
+                      <span className="text-base font-normal text-muted-foreground ml-1">
+                        {displayPeriod}
+                      </span>
+                    )}
+                  </div>
 
                   <ul className="space-y-3 text-left mb-8">
                     {plan.features.map((feature, idx) => (
@@ -165,17 +120,82 @@ export default function PricingPage() {
                   </ul>
 
                   <Link
-                    href={isEnterprise ? '/contact' : '/register'}
+                    href={
+                      isEnterprise 
+                        ? '/contact' 
+                        : `/checkout?plan=${plan.id}&price=${billing === 'monthly' ? plan.monthly : plan.yearly}&billing=${billing}`
+                    }
                     className={`btn btn-lg w-full ${
-                      plan.highlight ? 'btn-primary hover-glow' : 'btn-outline hover-scale'
+                      plan.popular ? 'btn-primary hover-glow' : 'btn-outline hover-scale'
                     }`}
                   >
-                    {isEnterprise ? 'Contact Sales' : 'Start Now'}
+                    {plan.cta}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </motion.div>
-              )
+              );
             })}
+          </div>
+        </section>
+
+        {/* Feature Comparison */}
+        <section className="py-20 bg-muted/30">
+          <div className="container mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">
+                Compare Plans
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                See how our plans stack up against each other
+              </p>
+            </motion.div>
+
+            <div className="bg-card rounded-2xl shadow-sm border overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left p-6 font-medium">Features</th>
+                    {pricingPlans.map((plan) => (
+                      <th key={plan.id} className="p-6 font-medium text-center">
+                        {plan.name}
+                        {plan.popular && (
+                          <span className="ml-2 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                            Popular
+                          </span>
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {pricingFeatures.map((section, sectionIndex) => (
+                    <React.Fragment key={sectionIndex}>
+                      <tr className="bg-muted/30">
+                        <td colSpan={pricingPlans.length + 1} className="p-3 font-semibold text-muted-foreground">
+                          {section.category}
+                        </td>
+                      </tr>
+                      {section.features.map((feature, featureIndex) => (
+                        <tr key={featureIndex} className="border-b">
+                          <td className="p-4 font-medium">{feature.name}</td>
+                          {pricingPlans.map((plan) => (
+                            <td key={plan.id} className="p-4 text-center">
+                              {feature[plan.id]}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 
@@ -197,7 +217,10 @@ export default function PricingPage() {
                   Empowering creators and businesses with intelligent AI tools for the modern world.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link href="/register" className="btn btn-primary btn-lg btn-enhanced hover-glow">
+                  <Link 
+                    href="/checkout?plan=pro&price=150&billing=monthly" 
+                    className="btn btn-primary btn-lg btn-enhanced hover-glow"
+                  >
                     Start Free Trial
                   </Link>
                   <Link href="/features" className="btn btn-outline btn-lg btn-enhanced hover-scale">

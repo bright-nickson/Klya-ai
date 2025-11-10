@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { 
@@ -12,118 +13,151 @@ import {
   Download,
   Eye,
   Copy,
-  Trash2
+  Trash2,
+  Loader2,
+  AlertCircle
 } from 'lucide-react'
+import { toast } from 'sonner'
+
+interface HistoryItem {
+  id: string;
+  action: string;
+  type: 'blog_post' | 'social_media' | 'email' | 'product_description' | 'invoice' | 'other';
+  language: 'en' | 'tw' | 'ga' | 'ew' | 'ha';
+  status: 'success' | 'failed' | 'processing';
+  timestamp: string;
+  wordCount?: number;
+  preview?: string;
+}
+
+const typeMap = {
+  blog_post: 'Blog Post',
+  social_media: 'Social Media',
+  email: 'Email',
+  product_description: 'Product Description',
+  invoice: 'Invoice',
+  other: 'Other'
+} as const;
+
+const languageMap = {
+  en: 'English',
+  tw: 'Twi',
+  ga: 'Ga',
+  ew: 'Ewe',
+  ha: 'Hausa'
+} as const;
 
 export default function History() {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
   const [filterType, setFilterType] = useState('all')
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [historyItems, setHistoryItems] = useState<HistoryItem[]>([])
 
-  const historyItems = [
-    {
-      id: 1,
-      action: 'Generated blog post about sustainable farming',
-      type: 'Blog Post',
-      language: 'English',
-      status: 'success',
-      timestamp: '2025-10-22 14:30',
-      wordCount: 850,
-      preview: 'Sustainable farming practices are revolutionizing agriculture in Ghana...'
-    },
-    {
-      id: 2,
-      action: 'Created social media content for product launch',
-      type: 'Social Media',
-      language: 'Twi',
-      status: 'success',
-      timestamp: '2025-10-22 12:15',
-      wordCount: 120,
-      preview: 'Yɛn nneɛma foforo a ɛba market no...'
-    },
-    {
-      id: 3,
-      action: 'Generated product description for e-commerce',
-      type: 'Product Description',
-      language: 'English',
-      status: 'success',
-      timestamp: '2025-10-22 10:45',
-      wordCount: 200,
-      preview: 'Premium quality handcrafted leather bags made in Ghana...'
-    },
-    {
-      id: 4,
-      action: 'Failed to generate email campaign',
-      type: 'Email',
-      language: 'English',
-      status: 'error',
-      timestamp: '2025-10-21 16:20',
-      wordCount: 0,
-      preview: 'Error: Content generation failed due to invalid parameters'
-    },
-    {
-      id: 5,
-      action: 'Generated advertisement copy',
-      type: 'Ad Copy',
-      language: 'Ga',
-      status: 'success',
-      timestamp: '2025-10-21 14:00',
-      wordCount: 75,
-      preview: 'Ni nɔ kɛ nitsɔmɔ fɛɛ...'
-    },
-    {
-      id: 6,
-      action: 'Created blog post about local cuisine',
-      type: 'Blog Post',
-      language: 'English',
-      status: 'success',
-      timestamp: '2025-10-21 11:30',
-      wordCount: 920,
-      preview: 'Ghanaian cuisine is a rich tapestry of flavors and traditions...'
-    },
-    {
-      id: 7,
-      action: 'Generated press release',
-      type: 'Press Release',
-      language: 'English',
-      status: 'success',
-      timestamp: '2025-10-20 15:45',
-      wordCount: 450,
-      preview: 'FOR IMMEDIATE RELEASE: KLYA AI announces new features...'
-    },
-    {
-      id: 8,
-      action: 'Created social media content',
-      type: 'Social Media',
-      language: 'English',
-      status: 'success',
-      timestamp: '2025-10-20 09:20',
-      wordCount: 95,
-      preview: 'Exciting news! We are launching our new product line...'
+  // Fetch history data
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        
+        // In a real app, you would fetch this from your API
+        // const response = await fetch('/api/history')
+        // if (!response.ok) throw new Error('Failed to fetch history')
+        // const data = await response.json()
+        // setHistoryItems(data)
+        
+        // For now, we'll set an empty array
+        setHistoryItems([])
+      } catch (err) {
+        console.error('Error fetching history:', err)
+        setError('Failed to load history. Please try again.')
+        toast.error('Failed to load history')
+      } finally {
+        setIsLoading(false)
+      }
     }
-  ]
+
+    fetchHistory()
+  }, [])
 
   const filteredItems = historyItems.filter(item => {
-    const matchesSearch = item.action.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         item.preview.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesFilter = filterType === 'all' || item.type === filterType
-    return matchesSearch && matchesFilter
+    const matchesSearch = searchQuery === '' || 
+                         item.action.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         (item.preview && item.preview.toLowerCase().includes(searchQuery.toLowerCase()))
+    const matchesType = filterType === 'all' || item.type === filterType
+    return matchesSearch && matchesType
   })
 
-  const contentTypes = ['all', 'Blog Post', 'Social Media', 'Product Description', 'Email', 'Ad Copy', 'Press Release']
+  const contentTypes = ['all', ...Object.values(typeMap)]
 
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Content History
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              View and manage all your generated content
-            </p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Content History</h1>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                View and manage your generated content history
+              </p>
+            </div>
+            {historyItems.length > 0 && (
+              <div className="mt-4 md:mt-0">
+                <button 
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                  disabled={isLoading}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Export History
+                </button>
+              </div>
+            )}
           </div>
+
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 text-primary animate-spin mb-4" />
+              <p className="text-gray-600 dark:text-gray-400">Loading history...</p>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && !isLoading && (
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center">
+              <div className="flex flex-col items-center">
+                <AlertCircle className="h-8 w-8 text-red-500 mb-2" />
+                <p className="text-red-700 dark:text-red-300">{error}</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                >
+                  Retry
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!isLoading && !error && historyItems.length === 0 && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
+                <Clock className="h-6 w-6 text-gray-500" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">No history yet</h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-6">
+                Your generated content will appear here
+              </p>
+              <button
+                onClick={() => router.push('/dashboard/generate')}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              >
+                Generate Content
+              </button>
+            </div>
+          )}
 
           {/* Filters and Search */}
           <div className="mb-6 flex flex-col sm:flex-row gap-4">
@@ -135,6 +169,7 @@ export default function History() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:outline-none"
+                disabled={isLoading}
               />
             </div>
             <div className="flex items-center space-x-2">
@@ -142,6 +177,7 @@ export default function History() {
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
                 className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:outline-none"
+                disabled={isLoading}
               >
                 {contentTypes.map((type) => (
                   <option key={type} value={type}>
@@ -149,53 +185,53 @@ export default function History() {
                   </option>
                 ))}
               </select>
-              <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 <Filter className="w-4 h-4" />
                 <span className="hidden sm:inline">More Filters</span>
               </button>
             </div>
           </div>
 
-          {/* Stats Summary */}
-          <div className="grid sm:grid-cols-3 gap-4 mb-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Total Items</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{historyItems.length}</p>
-                </div>
-                <Clock className="w-8 h-8 text-blue-500" />
-              </div>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Successful</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {historyItems.filter(item => item.status === 'success').length}
-                  </p>
-                </div>
-                <CheckCircle className="w-8 h-8 text-green-500" />
-              </div>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Failed</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {historyItems.filter(item => item.status === 'error').length}
-                  </p>
-                </div>
-                <XCircle className="w-8 h-8 text-red-500" />
-              </div>
-            </div>
-          </div>
-
           {/* History List */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredItems.length > 0 ? (
-                filteredItems.map((item) => (
+          {!isLoading && !error && historyItems.length > 0 && (
+            <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+              <div className="px-4 py-5 border-b border-gray-200 dark:border-gray-700 sm:px-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between">
+                  <div className="relative w-full sm:w-64 mb-4 sm:mb-0 sm:mr-4">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Search className="h-4 w-4 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-700 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                      placeholder="Search history..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                  <div className="flex items-center">
+                    <label htmlFor="type-filter" className="text-sm text-gray-500 dark:text-gray-400 mr-2">
+                      Filter by type:
+                    </label>
+                    <select
+                      id="type-filter"
+                      className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md bg-white dark:bg-gray-700"
+                      value={filterType}
+                      onChange={(e) => setFilterType(e.target.value)}
+                      disabled={isLoading}
+                    >
+                      <option value="all">All Types</option>
+                      <option value="blog_post">Blog Post</option>
+                      <option value="social_media">Social Media</option>
+                      <option value="email">Email</option>
+                      <option value="product_description">Product Description</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                {filteredItems.map((item) => (
                   <div key={item.id} className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0 mr-4">
@@ -226,9 +262,9 @@ export default function History() {
                               <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">
                                 {item.language}
                               </span>
-                              {item.wordCount > 0 && (
+                              {item.wordCount && item.wordCount > 0 ? (
                                 <span>{item.wordCount} words</span>
-                              )}
+                              ) : null}
                             </div>
                           </div>
                         </div>
@@ -268,20 +304,10 @@ export default function History() {
                       </div>
                     </div>
                   </div>
-                ))
-              ) : (
-                <div className="p-12 text-center">
-                  <Clock className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    No content found
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Try adjusting your search or filters
-                  </p>
-                </div>
-              )}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Pagination */}
           {filteredItems.length > 0 && (

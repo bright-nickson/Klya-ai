@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { motion } from 'framer-motion'
@@ -16,43 +16,123 @@ import {
   Users,
   ArrowUpRight,
   ArrowDownRight,
-  Activity
+  Activity,
+  Loader2
 } from 'lucide-react'
+import { analyticsApi } from '@/lib/api'
+import { toast } from 'sonner'
+
+interface AnalyticsData {
+  totalContent: number
+  successRate: number
+  totalLanguages: number
+  weeklyUsage: number
+  weeklyChange: number
+  contentByType: Array<{ _id: string; count: number }>
+  contentByLanguage: Array<{ _id: string; count: number }>
+  weeklyTrend: Array<{ date: string; count: number }>
+}
+
+const initialAnalyticsData: AnalyticsData = {
+  totalContent: 0,
+  successRate: 0,
+  totalLanguages: 0,
+  weeklyUsage: 0,
+  weeklyChange: 0,
+  contentByType: [],
+  contentByLanguage: [],
+  weeklyTrend: []
+}
 
 export default function Analytics() {
   const [selectedPeriod, setSelectedPeriod] = useState('7days')
-  
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData>(initialAnalyticsData)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchAnalyticsData = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        
+        const [dashboardResponse, contentHistoryResponse] = await Promise.all([
+          analyticsApi.getDashboardStats(),
+          analyticsApi.getContentAnalytics(selectedPeriod as 'week' | 'month' | 'year')
+        ])
+
+        if (!dashboardResponse.data) {
+          throw new Error('Failed to load dashboard data')
+        }
+
+        if (!contentHistoryResponse.data) {
+          throw new Error('Failed to load content history')
+        }
+
+        const dashboardData = dashboardResponse.data.data || {}
+        const contentData = contentHistoryResponse.data.data || {}
+
+        // Map the API response to our AnalyticsData interface
+        const mappedData: AnalyticsData = {
+          totalContent: dashboardData.totalContent || 0,
+          successRate: dashboardData.successRate || 0,
+          totalLanguages: dashboardData.languages?.length || 0,
+          weeklyUsage: dashboardData.weeklyUsage || 0,
+          weeklyChange: dashboardData.weeklyChange || 0,
+          contentByType: contentData.contentByType || [],
+          contentByLanguage: contentData.contentByLanguage || [],
+          weeklyTrend: contentData.weeklyTrend || []
+        }
+
+        setAnalyticsData(mappedData)
+      } catch (err) {
+        console.error('Error fetching analytics data:', err)
+        setError(err instanceof Error ? err.message : 'An unknown error occurred')
+        toast.error('Failed to load analytics data')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchAnalyticsData()
+  }, [selectedPeriod])
+
+  // Generate chart data from the API response
   const chartData = {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    contentGenerations: [12, 19, 15, 25, 22, 30, 28],
-    successRate: [95, 92, 98, 94, 96, 93, 97]
+    labels: (analyticsData.weeklyTrend || []).map(item => 
+      item?.date ? new Date(item.date).toLocaleDateString('en-US', { weekday: 'short' }) : ''
+    ) || [],
+    contentGenerations: (analyticsData.weeklyTrend || []).map(item => item?.count || 0) || [],
+    successRate: Array(analyticsData.weeklyTrend?.length || 0).fill(analyticsData.successRate || 0)
   }
 
-  const languageStats = [
-    { language: 'English', count: 145, percentage: 48 },
-    { language: 'Twi', count: 89, percentage: 30 },
-    { language: 'Ga', count: 42, percentage: 14 },
-    { language: 'Ewe', count: 24, percentage: 8 }
-  ]
+  // Map content type data for the UI
+  const contentTypeStats = (analyticsData.contentByType || []).map((item, index) => ({
+    type: (item && item._id) ? String(item._id) : 'Unknown',
+    count: (item && typeof item.count === 'number') ? item.count : 0,
+    color: [
+      'bg-purple-500',
+      'bg-blue-500',
+      'bg-green-500',
+      'bg-orange-500',
+      'bg-pink-500',
+      'bg-indigo-500'
+    ][index % 6] || 'bg-gray-500'
+  }))
 
-  const contentTypeStats = [
-    { type: 'Blog Posts', count: 78, color: 'bg-purple-500' },
-    { type: 'Social Media', count: 124, color: 'bg-blue-500' },
-    { type: 'Product Descriptions', count: 56, color: 'bg-green-500' },
-    { type: 'Email Campaigns', count: 42, color: 'bg-orange-500' }
-  ]
-
+  // Use Fragment to ensure proper JSX structure
   return (
-    <ProtectedRoute>
-      <DashboardLayout>
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-6 md:mb-8"
-          >
+    <Fragment>
+      <ProtectedRoute>
+        <DashboardLayout>
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-6 md:mb-8"
+            >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <motion.h1 
@@ -129,61 +209,116 @@ export default function Analytics() {
             ))}
           </motion.div>
 
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex justify-center items-center min-h-[400px]">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              <span className="ml-2">Loading analytics data...</span>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && !isLoading && (
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-300">
+              <p>Error loading analytics data: {error}</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="mt-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
           {/* Key Metrics */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 mb-6 md:mb-8">
-            {[
-              { icon: FileText, value: '300', label: 'Total Content Generated', change: '+12.5%', positive: true, color: 'purple', delay: 0.9 },
-              { icon: TrendingUp, value: '95.3%', label: 'Average Success Rate', change: '+8.2%', positive: true, color: 'blue', delay: 1.0 },
-              { icon: Globe, value: languageStats.reduce((sum, lang) => sum + lang.count, 0), label: 'Multi-language Content', change: '4 Languages', positive: null, color: 'green', delay: 1.1 },
-              { icon: Zap, value: '42', label: 'This Week', change: '+15.3%', positive: true, color: 'orange', delay: 1.2 }
-            ].map((metric, index) => {
-              const Icon = metric.icon
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ duration: 0.5, delay: metric.delay }}
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5 md:p-6 hover:shadow-lg transition-shadow cursor-pointer"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <motion.div 
-                      initial={{ rotate: 0 }}
-                      whileHover={{ rotate: 360 }}
-                      transition={{ duration: 0.6 }}
-                      className={`p-3 bg-${metric.color}-100 dark:bg-${metric.color}-900/30 rounded-lg`}
-                    >
-                      <Icon className={`w-6 h-6 text-${metric.color}-600 dark:text-${metric.color}-400`} />
-                    </motion.div>
-                    <motion.span 
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: metric.delay + 0.2 }}
-                      className={`text-xs font-medium flex items-center gap-1 ${
-                        metric.positive === true ? 'text-green-600 dark:text-green-400' : 
-                        metric.positive === false ? 'text-red-600 dark:text-red-400' : 
-                        'text-gray-500 dark:text-gray-400'
-                      }`}
-                    >
-                      {metric.positive === true && <ArrowUpRight className="w-3 h-3" />}
-                      {metric.positive === false && <ArrowDownRight className="w-3 h-3" />}
-                      {metric.change}
-                    </motion.span>
-                  </div>
-                  <motion.h3 
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: metric.delay + 0.3 }}
-                    className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1"
+          {!isLoading && !error && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 mb-6 md:mb-8">
+              {[
+                { 
+                  icon: FileText, 
+                  value: analyticsData.totalContent.toLocaleString(), 
+                  label: 'Total Content Generated', 
+                  change: `${analyticsData.weeklyChange >= 0 ? '+' : ''}${analyticsData.weeklyChange.toFixed(1)}%`, 
+                  positive: analyticsData.weeklyChange >= 0, 
+                  color: 'purple', 
+                  delay: 0.9 
+                },
+                { 
+                  icon: TrendingUp, 
+                  value: `${analyticsData.successRate.toFixed(1)}%`, 
+                  label: 'Average Success Rate', 
+                  change: `${analyticsData.weeklyChange >= 0 ? '+' : ''}${analyticsData.weeklyChange.toFixed(1)}%`, 
+                  positive: analyticsData.weeklyChange >= 0, 
+                  color: 'blue', 
+                  delay: 1.0 
+                },
+                { 
+                  icon: Globe, 
+                  value: analyticsData.totalLanguages.toString(), 
+                  label: 'Languages Used', 
+                  change: `${analyticsData.contentByLanguage.length} Languages`, 
+                  positive: null, 
+                  color: 'green', 
+                  delay: 1.1 
+                },
+                { 
+                  icon: Zap, 
+                  value: analyticsData.weeklyUsage.toString(), 
+                  label: 'This Week', 
+                  change: `${analyticsData.weeklyChange >= 0 ? '+' : ''}${analyticsData.weeklyChange.toFixed(1)}%`, 
+                  positive: analyticsData.weeklyChange >= 0, 
+                  color: 'orange', 
+                  delay: 1.2 
+                }
+              ].map((metric, index) => {
+                const Icon = metric.icon
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.5, delay: metric.delay }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5 md:p-6 hover:shadow-lg transition-shadow cursor-pointer"
                   >
-                    {metric.value}
-                  </motion.h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{metric.label}</p>
-                </motion.div>
-              )
-            })}
-          </div>
+                    <div className="flex items-center justify-between mb-4">
+                      <motion.div 
+                        initial={{ rotate: 0 }}
+                        whileHover={{ rotate: 360 }}
+                        transition={{ duration: 0.6 }}
+                        className={`p-3 bg-${metric.color}-100 dark:bg-${metric.color}-900/30 rounded-lg`}
+                      >
+                        <Icon className={`w-6 h-6 text-${metric.color}-600 dark:text-${metric.color}-400`} />
+                      </motion.div>
+                      <motion.span 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: metric.delay + 0.2 }}
+                        className={`text-xs font-medium flex items-center gap-1 ${
+                          metric.positive === true ? 'text-green-600 dark:text-green-400' : 
+                          metric.positive === false ? 'text-red-600 dark:text-red-400' : 
+                          'text-gray-500 dark:text-gray-400'
+                        }`}
+                      >
+                        {metric.positive === true && <ArrowUpRight className="w-3 h-3" />}
+                        {metric.positive === false && <ArrowDownRight className="w-3 h-3" />}
+                        {metric.change}
+                      </motion.span>
+                    </div>
+                    <motion.h3 
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5, delay: metric.delay + 0.3 }}
+                      className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1"
+                    >
+                      {metric.value}
+                    </motion.h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{metric.label}</p>
+                  </motion.div>
+                )
+              })}
+            </div>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
             {/* Content Generation Trend */}
@@ -245,7 +380,7 @@ export default function Analytics() {
                 Language Distribution
               </motion.h2>
               <div className="space-y-4">
-                {languageStats.map((lang, index) => (
+                {analyticsData.contentByLanguage.slice(0, 4).map((lang, index) => (
                   <motion.div 
                     key={index}
                     initial={{ opacity: 0, x: -20 }}
@@ -254,7 +389,7 @@ export default function Analytics() {
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        {lang.language}
+                        {lang._id || 'Unknown'}
                       </span>
                       <motion.span 
                         initial={{ opacity: 0 }}
@@ -262,13 +397,15 @@ export default function Analytics() {
                         transition={{ duration: 0.5, delay: 2.3 + index * 0.1 }}
                         className="text-sm text-gray-600 dark:text-gray-400"
                       >
-                        {lang.count} ({lang.percentage}%)
+                        {lang.count} ({Math.round((lang.count / Math.max(1, analyticsData.contentByLanguage.reduce((sum, l) => sum + l.count, 0))) * 100)}%)
                       </motion.span>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                       <motion.div 
                         initial={{ width: 0 }}
-                        animate={{ width: `${lang.percentage}%` }}
+                        animate={{
+                          width: `${Math.round((lang.count / Math.max(1, analyticsData.contentByLanguage.reduce((sum, l) => sum + l.count, 0))) * 100)}%`
+                        }}
                         transition={{ duration: 1, delay: 2.4 + index * 0.1, type: 'spring' }}
                         className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full"
                       />
@@ -296,7 +433,7 @@ export default function Analytics() {
               Content Type Breakdown
             </motion.h2>
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              {contentTypeStats.map((item, index) => (
+              {contentTypeStats.slice(0, 4).map((item, index) => (
                 <motion.div 
                   key={index} 
                   initial={{ opacity: 0, scale: 0.8 }}
@@ -305,28 +442,33 @@ export default function Analytics() {
                   whileHover={{ scale: 1.05, y: -5 }}
                   className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-lg transition-shadow cursor-pointer"
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <motion.div 
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 2, repeat: Infinity, delay: index * 0.2 }}
-                      className={`w-3 h-3 rounded-full ${item.color}`} 
-                    />
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-3 h-3 rounded-full ${item.color} ${isLoading ? 'animate-pulse' : ''}`} />
                     <motion.span 
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.5, delay: 2.9 + index * 0.1, type: 'spring' }}
-                      className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: 2.9 + index * 0.1 }}
+                      className="text-xs font-medium flex items-center gap-1 text-gray-600 dark:text-gray-400"
                     >
                       {item.count}
                     </motion.span>
                   </div>
-                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{item.type}</p>
+                  <motion.h3 
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: 3.0 + index * 0.1 }}
+                    className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-1"
+                  >
+                    {item.type}
+                  </motion.h3>
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate" title={item.type}>
+                    {item.type}
+                  </p>
                 </motion.div>
               ))}
             </div>
           </motion.div>
 
-          {/* Peak Usage Times */}
           <motion.div 
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -342,31 +484,9 @@ export default function Analytics() {
               <Calendar className="w-5 h-5 text-primary" />
               Peak Usage Times
             </motion.h2>
-            <div className="grid grid-cols-7 gap-2">
-              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, dayIndex) => (
-                <div key={dayIndex} className="text-center">
-                  <div className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
-                    {day}
-                  </div>
-                  <div className="space-y-1">
-                    {[...Array(24)].map((_, hourIndex) => {
-                      const intensity = Math.random()
-                      return (
-                        <div
-                          key={hourIndex}
-                          className={`h-2 rounded ${
-                            intensity > 0.7 ? 'bg-primary' :
-                            intensity > 0.4 ? 'bg-primary/50' :
-                            intensity > 0.2 ? 'bg-primary/25' :
-                            'bg-gray-200 dark:bg-gray-700'
-                          }`}
-                          title={`${hourIndex}:00 - ${intensity > 0.5 ? 'High' : 'Low'} activity`}
-                        />
-                      )
-                    })}
-                  </div>
-                </div>
-              ))}
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p>Peak usage data will be available after more usage data is collected.</p>
             </div>
             <div className="flex items-center justify-center space-x-4 mt-4 text-xs text-gray-600 dark:text-gray-400">
               <div className="flex items-center space-x-2">
@@ -382,9 +502,10 @@ export default function Analytics() {
                 <span>High</span>
               </div>
             </div>
-          </motion.div>
-        </div>
-      </DashboardLayout>
-    </ProtectedRoute>
+            </motion.div>
+          </div>
+        </DashboardLayout>
+      </ProtectedRoute>
+    </Fragment>
   )
 }

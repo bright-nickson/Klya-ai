@@ -261,7 +261,7 @@ export const audioApi = {
   
   getTranscriptions: (page = 1, limit = 10) =>
     api.get<PaginatedResponse<any>>(
-      `/audio/transcriptions?page=${page}&limit=${limit}`,
+      `/audio/history?page=${page}&limit=${limit}`,
       { withCredentials: true }
     ),
 };
@@ -312,16 +312,21 @@ export const analyticsApi = {
   getDashboardStats: () =>
     api.get<ApiResponse<any>>('/analytics/dashboard', { withCredentials: true }),
   
+  // Updated to use the correct endpoint for usage analytics
   getUsageAnalytics: (period: 'week' | 'month' | 'year' = 'month') =>
     api.get<ApiResponse<any>>(
-      `/analytics/usage?period=${period}`,
+      '/analytics/dashboard', // Using dashboard endpoint which includes usage data
       { withCredentials: true }
     ),
   
+  // Updated to use the correct endpoint for content analytics
   getContentAnalytics: (period: 'week' | 'month' | 'year' = 'month') =>
     api.get<ApiResponse<any>>(
-      `/analytics/content?period=${period}`,
-      { withCredentials: true }
+      '/analytics/content-history', // Using content-history endpoint
+      { 
+        params: { period },
+        withCredentials: true 
+      }
     ),
 };
 
