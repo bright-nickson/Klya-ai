@@ -1,6 +1,6 @@
 import express from 'express'
 import { body } from 'express-validator'
-import { getAdminUsers, getSystemMetrics, getSystemLogs, broadcastNotification } from '../controllers/adminController'
+import { getAdminUsers, getSystemMetrics, getSystemLogs, broadcastNotification, getSignupStats } from '../controllers/adminController'
 import { protect, authorize } from '../middleware/auth'
 
 const router = express.Router()
@@ -13,6 +13,11 @@ router.use(authorize('admin'))
 // @desc    List all users (enhanced for admin)
 // @access  Private/Admin
 router.get('/users', getAdminUsers)
+
+// @route   GET /api/admin/stats
+// @desc    Get signup analytics and user stats
+// @access  Private/Admin
+router.get('/stats', getSignupStats)
 
 // @route   GET /api/admin/metrics
 // @desc    Get system-wide metrics

@@ -385,4 +385,47 @@ export const apiKeysApi = {
     ),
 };
 
+// Admin API
+export interface SignupStats {
+  totalUsers: number;
+  newUsersLast7Days: number;
+  activeUsers: number;
+  subscriptionStats: {
+    starter: number;
+    professional: number;
+    enterprise: number;
+  };
+  dailySignups: Array<{
+    date: string;
+    count: number;
+  }>;
+}
+
+export const adminApi = {
+  getSignupStats: () =>
+    api.get<ApiResponse<SignupStats>>('/admin/stats', { withCredentials: true }),
+  
+  getAdminUsers: (page = 1, limit = 50, plan?: string, search?: string) =>
+    api.get<ApiResponse<any>>(
+      `/admin/users?page=${page}&limit=${limit}${plan ? `&plan=${plan}` : ''}${search ? `&search=${search}` : ''}`,
+      { withCredentials: true }
+    ),
+  
+  getSystemMetrics: () =>
+    api.get<ApiResponse<any>>('/admin/metrics', { withCredentials: true }),
+  
+  getSystemLogs: (level = 'info', limit = 100) =>
+    api.get<ApiResponse<any>>(
+      `/admin/logs?level=${level}&limit=${limit}`,
+      { withCredentials: true }
+    ),
+  
+  broadcastNotification: (title: string, message: string, targetUsers?: string, notificationType?: string) =>
+    api.post<ApiResponse>(
+      '/admin/broadcast',
+      { title, message, targetUsers, notificationType },
+      { withCredentials: true }
+    ),
+};
+
 export default api;
