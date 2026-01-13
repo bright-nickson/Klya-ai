@@ -219,6 +219,97 @@ export const getSystemLogs = async (req: AuthRequest, res: Response, next: NextF
   }
 }
 
+// @desc    Get signup analytics and user stats
+// @route   GET /api/admin/stats
+// @access  Private/Admin
+export const getSignupStats = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    // Get total users
+    const totalUsers = await User.countDocuments()
+
+    // Get new users in the last 7 days
+    const sevenDaysAgo = new Date()
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+    const newUsersLast7Days = await User.countDocuments({
+      createdAt: { $gte: sevenDaysAgo }
+    })
+
+    // Get daily signups for the last 30 days
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+    const dailySignupsAggregation = await User.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: thirtyDaysAgo }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$createdAt' },
+            month: { $month: '$createdAt' },
+            day: { $dayOfMonth: '$createdAt' }
+          },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1 }
+      }
+    ])
+
+    // Format daily signups into array with date strings
+    const dailySignups = dailySignupsAggregation.map(item => {
+      const date = new Date(
+        item._id.year,
+        item._id.month - 1,
+        item._id.day
+      )
+      return {
+        date: date.toISOString().split('T')[0], // YYYY-MM-DD format
+        count: item.count
+      }
+    })
+
+    // Get active users (logged in within last 7 days)
+    const activeUsers = await User.countDocuments({
+      lastLogin: { $gte: sevenDaysAgo },
+      isActive: true
+    })
+
+    // Get subscription breakdown
+    const subscriptionBreakdown = await User.aggregate([
+      {
+        $group: {
+          _id: '$subscription.plan',
+          count: { $sum: 1 }
+        }
+      }
+    ])
+
+    const subscriptionStats = {
+      starter: subscriptionBreakdown.find(s => s._id === 'starter')?.count || 0,
+      professional: subscriptionBreakdown.find(s => s._id === 'professional')?.count || 0,
+      enterprise: subscriptionBreakdown.find(s => s._id === 'enterprise')?.count || 0
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalUsers,
+        newUsersLast7Days,
+        activeUsers,
+        subscriptionStats,
+        dailySignups
+      }
+    })
+  } catch (error) {
+    logger.error('Get signup stats error:', error)
+    next(error)
+  }
+}
+
 // @desc    Broadcast notification to users
 // @route   POST /api/admin/broadcast
 // @access  Private/Admin
