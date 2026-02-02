@@ -77,7 +77,7 @@ export default function AboutPage() {
               className="relative rounded-2xl overflow-hidden shadow-lg"
             >
                 <Image
-                  src="/images/screenshots/screenshot.png"
+                  src="/screenshots/screenshot.png"
                   alt="KLYA AI platform interface"
                   width={1200}
                   height={800}
@@ -155,14 +155,14 @@ export default function AboutPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
               {[
-                { name: 'Callistus Bright', role: 'Founder & CEO', img: '/images/team1.jpg' },
-                { name: 'Leonardo AI', role: 'Product Designer', img: '/images/team2.jpg' },
-                { name: 'Chat GPT', role: 'Lead Engineer', img: '/images/team3.jpg' },
-                { name: 'Sekyere Louis', role: 'Growth & Ops', img: '/images/team4.jpg' },
-                { name: 'Semanhyia Joshua', role: 'AI engineer', img: '/images/team1.jpg' },
-                { name: 'Schwenninger Emanuel', role: 'Frontend Engineer', img: '/images/team4.jpg' },
-                { name: 'Sebi Justice', role: 'Devops engineer', img: '/images/team3.jpg' },
-                { name: 'Segoh Bright', role: 'Data Analyst', img: '/images/team1.jpg' },
+                { name: 'Shhh', role: 'Founder & CEO', img: '/images/lock.jpg' },
+                { name: 'Hehe Boi', role: 'Product Designer', img: '/images/hehe.jpg' },
+                { name: 'Character development', role: 'Lead Engineer', img: '/images/hehehe.jpg' },
+                { name: 'Well well well', role: 'Growth & Ops', img: '/images/see.jpeg' },
+                { name: 'Korku Yie', role: 'AI engineer', img: '/images/kishhhh.jpg' },
+                { name: 'You feel me', role: 'Security Engineer', img: '/images/Bobo.jpg' },
+                { name: 'Cera des...', role: 'Devops engineer', img: '/images/Maybe_Cera.jpg' },
+                { name: 'Gister', role: 'Data Analyst', img: '/images/yiee.jpg' },
                 { name: 'Senyo Kekeli', role: 'Business Development Lead', img: '/images/team3.jpg' },
                 { name: 'Siame Kelvin', role: 'Backend Engineer', img: '/images/team4.jpg' }
               ].map((m) => (
