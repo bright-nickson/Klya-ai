@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
 
-type SocialProvider = 'google' | 'github' | 'twitter' | 'linkedin' | 'facebook' | 'instagram' | 'snapchat' | 'threads'
+type SocialProvider = string
 
 interface SocialAccount {
   provider: SocialProvider
@@ -16,38 +16,36 @@ interface SocialAccount {
 }
 
 export function SocialAccounts() {
-  const [accounts, setAccounts] = useState<SocialAccount[]>([
-    { provider: 'google', connected: false },
-    { provider: 'github', connected: false },
-    { provider: 'twitter', connected: false },
-    { provider: 'linkedin', connected: false },
-    { provider: 'facebook', connected: false },
-    { provider: 'instagram', connected: false },
-    { provider: 'snapchat', connected: false },
-    { provider: 'threads', connected: false }
-  ])
+  const [accounts, setAccounts] = useState<SocialAccount[]>([])
+  const [enabledProviders, setEnabledProviders] = useState<SocialProvider[]>([])
   const [isLoading, setIsLoading] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
-    const fetchConnectedAccounts = async () => {
+    const fetchProvidersAndAccounts = async () => {
       try {
-        const response = await fetch('/api/auth/accounts')
-        if (!response.ok) throw new Error('Failed to fetch accounts')
-        const data = await response.json()
-        
-        setAccounts(prev => 
-          prev.map(account => ({
-            ...account,
-            ...data.find((a: SocialAccount) => a.provider === account.provider)
-          }))
-        )
+        // Fetch enabled providers
+        const providersRes = await fetch('/api/auth/accounts/providers')
+        if (!providersRes.ok) throw new Error('Failed to fetch enabled providers')
+        const providers: SocialProvider[] = await providersRes.json()
+        setEnabledProviders(providers)
+
+        // Fetch connected accounts
+        const accountsRes = await fetch('/api/auth/accounts')
+        if (!accountsRes.ok) throw new Error('Failed to fetch accounts')
+        const connectedAccounts: SocialAccount[] = await accountsRes.json()
+
+        // Merge enabled providers with connected status
+        const merged = providers.map((provider) => {
+          const found = connectedAccounts.find((a) => a.provider === provider)
+          return found || { provider, connected: false }
+        })
+        setAccounts(merged)
       } catch (error) {
-        console.error('Error fetching connected accounts:', error)
+        console.error('Error loading providers/accounts:', error)
         toast.error('Failed to load connected accounts')
       }
     }
-
-    fetchConnectedAccounts()
+    fetchProvidersAndAccounts()
   }, [])
 
   const updateLoading = (provider: string, loading: boolean) => {

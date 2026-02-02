@@ -159,12 +159,12 @@ export default function AboutPage() {
                 { name: 'Leonardo AI', role: 'Product Designer', img: '/images/team2.jpg' },
                 { name: 'Chat GPT', role: 'Lead Engineer', img: '/images/team3.jpg' },
                 { name: 'Sekyere Louis', role: 'Growth & Ops', img: '/images/team4.jpg' },
-                { name: 'Open AI', role: 'AI engineer', img: '/images/team1.jpg' },
-                { name: 'Aura build AI', role: 'Frontend Engineer', img: '/images/team1.jpg' },
-                { name: 'Callistus Bright', role: 'Devops engineer', img: '/images/team1.jpg' },
-                { name: 'Mongoose', role: 'Data Analyst', img: '/images/team1.jpg' },
-                { name: 'Chat GPT', role: 'Business Development Lead', img: '/images/team1.jpg' },
-                { name: 'Cursor AI', role: 'Backend Engineer', img: '/images/team1.jpg' },
+                { name: 'Semanhyia Joshua', role: 'AI engineer', img: '/images/team1.jpg' },
+                { name: 'Schwenninger Emanuel', role: 'Frontend Engineer', img: '/images/team4.jpg' },
+                { name: 'Sebi Justice', role: 'Devops engineer', img: '/images/team3.jpg' },
+                { name: 'Segoh Bright', role: 'Data Analyst', img: '/images/team1.jpg' },
+                { name: 'Senyo Kekeli', role: 'Business Development Lead', img: '/images/team3.jpg' },
+                { name: 'Siame Kelvin', role: 'Backend Engineer', img: '/images/team4.jpg' }
               ].map((m) => (
                 <motion.div
                   key={m.name}
